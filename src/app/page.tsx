@@ -20,7 +20,7 @@ export default function Home() {
               />
             </div>
 
-            <h1 className="text-5xl font-semibold tracking-tight md:text-6xl text-slate-900">
+            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl text-slate-900">
               U.S.-Based Returns, Inspection, and Reverse Logistics for E-Commerce Sellers
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">
