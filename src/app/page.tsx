@@ -82,7 +82,7 @@ export default function Home() {
             <input type="hidden" name="access_key" value="c00d48aa-1907-4897-8bfc-06fa1918e4a3" />
             <input type="hidden" name="subject" value="New ReturnLab Logistics contact form submission" />
             <input type="hidden" name="from_name" value="ReturnLab Logistics Website" />
-            <input type="hidden" name="redirect" value="https://www.returnlablogistics.com" />
+            <input type="hidden" name="redirect" value="https://www.returnlablogistics.com/thank-you" />
 
             <input
               name="name"
