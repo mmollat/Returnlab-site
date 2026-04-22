@@ -50,7 +50,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-6xl px-6 pb-20 md:px-10">
+      <section className="mx-auto max-w-6xl px-6 py-4 md:px-10">
+        <div className="rounded-[32px] border border-slate-200 bg-slate-50 p-7">
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900">About Us</h2>
+          <div className="mt-4 max-w-4xl space-y-5 text-base leading-8 text-slate-600">
+            <p>
+              ReturnLab Logistics is a U.S.-based returns processing and reverse logistics service built to support e-commerce sellers, especially those operating internationally.
+            </p>
+            <p>
+              We specialize in handling the part of the business most sellers do not want to deal with: product returns. From package receiving and inspection to disposal and liquidation, we provide a simple, reliable solution for managing U.S.-based returns without the need for a local presence.
+            </p>
+            <p>
+              Our goal is straightforward: help sellers reduce friction, save time, and operate more efficiently by taking returns off their plate.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="mx-auto max-w-6xl px-6 pb-20 pt-10 md:px-10">
         <div className="rounded-[32px] border border-orange-200 bg-orange-50 p-7">
           <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Contact Us</h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
