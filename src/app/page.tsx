@@ -20,7 +20,7 @@ export default function Home() {
               />
             </div>
 
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl text-slate-900">
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
               U.S.-Based Returns, Inspection, and Reverse Logistics for E-Commerce Sellers
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">
@@ -40,7 +40,10 @@ export default function Home() {
         <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Services</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {services.map((service) => (
-            <div key={service} className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-700 shadow-sm">
+            <div
+              key={service}
+              className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-700 shadow-sm"
+            >
               {service}
             </div>
           ))}
@@ -54,20 +57,30 @@ export default function Home() {
             Contact us to discuss your package receiving, returns, inspection, disposal, or liquidation needs.
           </p>
 
-          <form className="mt-6 space-y-4">
+          <form
+            action="mailto:info@returnlablogistics.com"
+            method="post"
+            encType="text/plain"
+            className="mt-6 space-y-4"
+          >
             <input
+              name="Name"
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="Name"
             />
             <input
+              name="Company"
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="Company"
             />
             <input
+              name="Email"
+              type="email"
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="Email"
             />
             <textarea
+              name="Message"
               className="min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="How can we help?"
             />
