@@ -91,12 +91,10 @@ export default function Home() {
 
           <form
             ref={formRef}
-            action="https://formspree.io/f/mzdykjdo"
+            action="/api/contact"
             method="POST"
             className="mt-6 space-y-4"
           >
-            <input type="hidden" name="_subject" value="New ReturnLab Logistics contact form submission" />
-            <input type="hidden" name="_next" value="https://www.returnlablogistics.com/thank-you" />
 
             <input
               name="name"
