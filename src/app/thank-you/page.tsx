@@ -12,7 +12,7 @@ export default function ThankYouPage() {
           We received your message and will get back to you soon.
         </p>
         <a
-          href="/"
+          href="/?fresh=1"
           className="mt-8 inline-flex rounded-full bg-orange-500 px-7 py-3 font-medium text-white transition hover:bg-orange-400"
         >
           Back to Home
