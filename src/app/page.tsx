@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 export default function Home() {
   const services = [
     "Package receiving",
@@ -6,6 +10,17 @@ export default function Home() {
     "Disposal services",
     "Resale / liquidation support",
   ];
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("fresh") === "1") {
+      formRef.current?.reset();
+      window.history.replaceState({}, "", "/");
+    }
+  }, []);
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
@@ -75,6 +90,7 @@ export default function Home() {
           </p>
 
           <form
+            ref={formRef}
             action="https://formspree.io/f/mzdykjdo"
             method="POST"
             className="mt-6 space-y-4"
