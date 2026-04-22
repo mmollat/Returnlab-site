@@ -75,14 +75,12 @@ export default function Home() {
           </p>
 
           <form
-            action="https://api.web3forms.com/submit"
+            action="https://formspree.io/f/mzdykjdo"
             method="POST"
             className="mt-6 space-y-4"
           >
-            <input type="hidden" name="access_key" value="c00d48aa-1907-4897-8bfc-06fa1918e4a3" />
-            <input type="hidden" name="subject" value="New ReturnLab Logistics contact form submission" />
-            <input type="hidden" name="from_name" value="ReturnLab Logistics Website" />
-            <input type="hidden" name="redirect" value="https://www.returnlablogistics.com/thank-you" />
+            <input type="hidden" name="_subject" value="New ReturnLab Logistics contact form submission" />
+            <input type="hidden" name="_next" value="https://www.returnlablogistics.com/thank-you" />
 
             <input
               name="name"
