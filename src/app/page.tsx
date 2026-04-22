@@ -58,29 +58,36 @@ export default function Home() {
           </p>
 
           <form
-            action="mailto:info@returnlablogistics.com"
-            method="post"
-            encType="text/plain"
+            action="https://api.web3forms.com/submit"
+            method="POST"
             className="mt-6 space-y-4"
           >
+            <input type="hidden" name="access_key" value="c00d48aa-1907-4897-8bfc-06fa1918e4a3" />
+            <input type="hidden" name="subject" value="New ReturnLab Logistics contact form submission" />
+            <input type="hidden" name="from_name" value="ReturnLab Logistics Website" />
+            <input type="hidden" name="redirect" value="https://www.returnlablogistics.com" />
+
             <input
-              name="Name"
+              name="name"
+              required
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="Name"
             />
             <input
-              name="Company"
+              name="company"
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="Company"
             />
             <input
-              name="Email"
+              name="email"
               type="email"
+              required
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="Email"
             />
             <textarea
-              name="Message"
+              name="message"
+              required
               className="min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
               placeholder="How can we help?"
             />
