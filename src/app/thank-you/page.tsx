@@ -11,12 +11,7 @@ export default function ThankYouPage() {
         <p className="mt-4 text-base leading-8 text-slate-600">
           We received your message and will get back to you soon.
         </p>
-        <a
-          href="/?fresh=1"
-          className="mt-8 inline-flex rounded-full bg-orange-500 px-7 py-3 font-medium text-white transition hover:bg-orange-400"
-        >
-          Back to Home
-        </a>
+
       </div>
     </main>
   );
