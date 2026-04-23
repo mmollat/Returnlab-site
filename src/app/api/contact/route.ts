@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
   try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.error("Missing RESEND_API_KEY");
+      return NextResponse.redirect(new URL("/?error=submit-failed", request.url), 303);
+    }
+
+    const resend = new Resend(apiKey);
     const formData = await request.formData();
     const name = String(formData.get("name") || "").trim();
     const company = String(formData.get("company") || "").trim();
