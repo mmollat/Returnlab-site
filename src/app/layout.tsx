@@ -35,7 +35,7 @@ export default function RootLayout({
             {/* LOGO */}
             <a href="/" className="flex items-center gap-3">
               <img
-                src="/IMG_2930.PNG"
+                src="/rl-logo.png"
                 alt="ReturnLab"
                 className="h-8 w-auto"
               />
