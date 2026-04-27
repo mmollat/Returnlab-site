@@ -24,6 +24,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
+      {/* HERO */}
       <section className="border-b border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]">
         <div className="mx-auto max-w-6xl px-6 py-24 md:px-10">
           <div className="max-w-4xl">
@@ -35,12 +36,16 @@ export default function Home() {
               />
             </div>
 
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
+            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
               U.S.-Based Returns, Inspection, and Reverse Logistics for E-Commerce Sellers
             </h1>
+
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">
-              ReturnLab Logistics provides U.S.-based package receiving, returns processing, inspection, disposal, and resale/liquidation services for domestic and international e-commerce sellers.
+              ReturnLab Logistics provides U.S.-based package receiving, returns processing,
+              inspection, disposal, and resale/liquidation services for domestic and international
+              e-commerce sellers.
             </p>
+
             <a
               href="#contact"
               className="mt-8 inline-flex rounded-full bg-orange-500 px-7 py-3 font-medium text-white transition hover:bg-orange-400"
@@ -51,8 +56,10 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SERVICES */}
       <section className="mx-auto max-w-6xl px-6 py-16 md:px-10">
-        <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Services</h2>
+        <h2 className="text-3xl font-semibold tracking-tight">Services</h2>
+
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {services.map((service) => (
             <div
@@ -65,28 +72,118 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ABOUT */}
       <section className="mx-auto max-w-6xl px-6 py-4 md:px-10">
         <div className="rounded-[32px] border border-slate-200 bg-slate-50 p-7">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900">About Us</h2>
+          <h2 className="text-3xl font-semibold tracking-tight">About Us</h2>
+
           <div className="mt-4 max-w-4xl space-y-5 text-base leading-8 text-slate-600">
             <p>
-              ReturnLab Logistics is a U.S.-based returns processing and reverse logistics service built to support e-commerce sellers, especially those operating internationally.
+              ReturnLab Logistics is a U.S.-based returns processing and reverse logistics service
+              built to support e-commerce sellers, especially those operating internationally.
             </p>
+
             <p>
-              We specialize in handling the part of the business most sellers do not want to deal with: product returns. From package receiving and inspection to disposal and liquidation, we provide a simple, reliable solution for managing U.S.-based returns without the need for a local presence.
+              We specialize in handling the part of the business most sellers do not want to deal
+              with: product returns. From package receiving and inspection to disposal and
+              liquidation, we provide a simple, reliable solution for managing U.S.-based returns
+              without the need for a local presence.
             </p>
+
             <p>
-              Our goal is straightforward: help sellers reduce friction, save time, and operate more efficiently by taking returns off their plate.
+              Our goal is straightforward: help sellers reduce friction, save time, and operate more
+              efficiently by taking returns off their plate.
             </p>
           </div>
         </div>
       </section>
 
+      {/* PRICING TEASER */}
+      <section className="mx-auto max-w-6xl px-6 py-20 md:px-10">
+        <div className="text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-orange-500">
+            Pricing
+          </p>
+
+          <h2 className="text-3xl font-semibold md:text-5xl">
+            Plans starting at $300/month
+          </h2>
+
+          <p className="mx-auto mt-5 max-w-2xl text-slate-600">
+            Simple, scalable return handling for international e-commerce sellers.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {[
+            {
+              name: "Starter",
+              price: "$300",
+              detail: "Up to 50 returns/month",
+            },
+            {
+              name: "Growth",
+              price: "$500",
+              detail: "Up to 120 returns/month",
+              featured: true,
+            },
+            {
+              name: "Scale",
+              price: "$800",
+              detail: "Up to 250 returns/month",
+            },
+          ].map((plan) => (
+            <div
+              key={plan.name}
+              className={`rounded-3xl border p-6 shadow-sm ${
+                plan.featured
+                  ? "border-orange-500 bg-orange-50"
+                  : "border-slate-200 bg-white"
+              }`}
+            >
+              {plan.featured && (
+                <div className="mb-4 inline-block rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-white">
+                  Most Popular
+                </div>
+              )}
+
+              <h3 className="text-xl font-semibold">{plan.name}</h3>
+
+              <div className="mt-4 text-4xl font-bold">
+                {plan.price}
+                <span className="text-base font-normal text-slate-500"> / mo</span>
+              </div>
+
+              <p className="mt-3 text-slate-600">{plan.detail}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 flex justify-center gap-4">
+          <a
+            href="/pricing"
+            className="rounded-full bg-orange-500 px-6 py-3 font-medium text-white transition hover:bg-orange-400"
+          >
+            View Full Pricing
+          </a>
+
+          <a
+            href="#contact"
+            className="rounded-full border border-slate-300 px-6 py-3 font-medium text-slate-900 transition hover:bg-slate-100"
+          >
+            Get Started
+          </a>
+        </div>
+      </section>
+
+      {/* CONTACT */}
       <section id="contact" className="mx-auto max-w-6xl px-6 pb-20 pt-10 md:px-10">
         <div className="rounded-[32px] border border-orange-200 bg-orange-50 p-7">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Contact Us</h2>
+          <h2 className="text-3xl font-semibold tracking-tight">Contact Us</h2>
+
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-            Contact us to discuss your package receiving, returns, inspection, disposal, or liquidation needs.
+            Contact us to discuss your package receiving, returns, inspection,
+            disposal, or liquidation needs.
           </p>
 
           <form
@@ -95,29 +192,28 @@ export default function Home() {
             method="POST"
             className="mt-6 space-y-4"
           >
-
             <input
               name="name"
               required
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
+              className="w-full rounded-2xl border border-slate-200 px-4 py-3"
               placeholder="Name"
             />
             <input
               name="company"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
+              className="w-full rounded-2xl border border-slate-200 px-4 py-3"
               placeholder="Company"
             />
             <input
               name="email"
               type="email"
               required
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
+              className="w-full rounded-2xl border border-slate-200 px-4 py-3"
               placeholder="Email"
             />
             <textarea
               name="message"
               required
-              className="min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none"
+              className="min-h-32 w-full rounded-2xl border border-slate-200 px-4 py-3"
               placeholder="How can we help?"
             />
             <button className="w-full rounded-full bg-orange-500 px-6 py-3 font-medium text-white transition hover:bg-orange-400">
