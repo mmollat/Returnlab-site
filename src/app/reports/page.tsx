@@ -18,7 +18,7 @@ export default function ReportsPage() {
         {
           headers: {
             apikey:
-              "YOUR_PUBLIC_KEY_HERE",
+              "sb_publishable_0bY7s0G4JPIxcVBXB2V0pA_7lDgnDR1",
           },
         }
       );
