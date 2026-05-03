@@ -95,14 +95,23 @@ export default function ReportsPage() {
   }, [reports]);
 
   const months = useMemo(() => {
-    return Array.from(
-      new Set(
-        reports
-          .filter((r) => r.client_name === selectedClient)
-          .map((r) => r.report_month)
-      )
-    );
-  }, [reports, selectedClient]);
+  const year = new Date().getFullYear();
+
+  return [
+    `${year}-01`,
+    `${year}-02`,
+    `${year}-03`,
+    `${year}-04`,
+    `${year}-05`,
+    `${year}-06`,
+    `${year}-07`,
+    `${year}-08`,
+    `${year}-09`,
+    `${year}-10`,
+    `${year}-11`,
+    `${year}-12`,
+  ];
+}, []);
 
   const report = useMemo(() => {
     return (
