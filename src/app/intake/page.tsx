@@ -53,7 +53,7 @@ export default function IntakePage() {
     setSuccess(false);
 
     try {
-      // REPLACE THIS WITH YOUR N8N WEBHOOK URL
+      // REPLACE THIS WITH YOUR N8N WEBHOOK URLs
       const webhookUrl = "https://n8n.srv1556990.hstgr.cloud/webhook/returnlab-intake";
 
       const payload = {
