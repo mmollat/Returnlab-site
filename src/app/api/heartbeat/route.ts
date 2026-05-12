@@ -7,12 +7,22 @@ const supabase = createClient(
 );
 
 export async function GET() {
-  await supabase
+  const { error } = await supabase
     .from("heartbeat")
     .update({
       last_seen: new Date().toISOString(),
     })
     .eq("id", 1);
+
+  if (error) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({
     ok: true,
