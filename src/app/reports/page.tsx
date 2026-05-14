@@ -47,6 +47,33 @@ type ReportRow = {
 const SUPABASE_URL = "https://vtrilxvdqnvnbzgpokpr.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_0bY7s0G4JPIxcVBXB2V0pA_7lDgnDR1";
 
+const DEFAULT_BASE_FEE = 400;
+const DEFAULT_INCLUDED_RETURNS = 80;
+
+function emptyReportData(client: string, month: string): ReportData {
+  return {
+    business: "ReturnLab Logistics",
+    client,
+    month,
+    generatedAt: new Date().toISOString(),
+    totalRows: 0,
+    totalReturns: 0,
+    kept: 0,
+    disposed: 0,
+    keepRate: 0,
+    disposedRate: 0,
+    totalTimeMinutes: 0,
+    avgMinutesPerReturn: 0,
+    estimatedResaleValue: 0,
+    baseFee: DEFAULT_BASE_FEE,
+    includedReturns: DEFAULT_INCLUDED_RETURNS,
+    additionalReturns: 0,
+    additionalFees: 0,
+    totalDue: DEFAULT_BASE_FEE,
+    recentReturns: [],
+  };
+}
+
 export default function ReportsPage() {
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [selectedClient, setSelectedClient] = useState("CTH");
@@ -65,6 +92,7 @@ export default function ReportsPage() {
           {
             headers: {
               apikey: SUPABASE_PUBLISHABLE_KEY,
+              Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
             },
           }
         );
@@ -91,56 +119,60 @@ export default function ReportsPage() {
   }, []);
 
   const clients = useMemo(() => {
-    return Array.from(new Set(reports.map((r) => r.client_name)));
+    const reportClients = reports.map((r) => r.client_name);
+    return Array.from(new Set(reportClients.length ? reportClients : ["CTH"]));
   }, [reports]);
 
   const months = useMemo(() => {
-  const year = new Date().getFullYear();
+    const year = new Date().getFullYear();
 
-  return [
-    `${year}-01`,
-    `${year}-02`,
-    `${year}-03`,
-    `${year}-04`,
-    `${year}-05`,
-    `${year}-06`,
-    `${year}-07`,
-    `${year}-08`,
-    `${year}-09`,
-    `${year}-10`,
-    `${year}-11`,
-    `${year}-12`,
-  ];
-}, []);
+    return [
+      `${year}-01`,
+      `${year}-02`,
+      `${year}-03`,
+      `${year}-04`,
+      `${year}-05`,
+      `${year}-06`,
+      `${year}-07`,
+      `${year}-08`,
+      `${year}-09`,
+      `${year}-10`,
+      `${year}-11`,
+      `${year}-12`,
+    ];
+  }, []);
 
   const report = useMemo(() => {
-    return (
-      reports.find(
-        (r) =>
-          r.client_name === selectedClient && r.report_month === selectedMonth
-      ) ?? reports[0]
+    return reports.find(
+      (r) =>
+        r.client_name === selectedClient && r.report_month === selectedMonth
     );
   }, [reports, selectedClient, selectedMonth]);
 
+  const d = report?.report_data ?? emptyReportData(selectedClient, selectedMonth);
+  const recentReturns = d.recentReturns ?? [];
+  const reportClient = report?.client_name ?? selectedClient;
+  const reportMonth = report?.report_month ?? selectedMonth;
+  const generatedAt = report?.updated_at
+    ? new Date(report.updated_at).toLocaleString()
+    : "No report generated for this month yet";
+
   if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white p-8">
+      <main className="min-h-screen bg-black p-8 text-white">
         <p className="text-zinc-400">Loading report...</p>
       </main>
     );
   }
 
-  if (error || !report) {
+  if (error) {
     return (
-      <main className="min-h-screen bg-black text-white p-8">
+      <main className="min-h-screen bg-black p-8 text-white">
         <h1 className="text-2xl font-semibold">ReturnLab Reports</h1>
-        <p className="mt-4 text-red-400">{error || "No reports found."}</p>
+        <p className="mt-4 text-red-400">{error}</p>
       </main>
     );
   }
-
-  const d = report.report_data;
-  const recentReturns = d.recentReturns ?? [];
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -154,27 +186,17 @@ export default function ReportsPage() {
               Monthly Return Report
             </h1>
             <p className="mt-2 text-zinc-400">
-              {report.client_name} · {report.report_month}
+              {reportClient} · {reportMonth}
             </p>
             <p className="mt-2 text-sm text-zinc-600">
-              Generated{" "}
-              {report.updated_at
-                ? new Date(report.updated_at).toLocaleString()
-                : d.generatedAt}
+              {generatedAt}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <select
               value={selectedClient}
-              onChange={(e) => {
-                const nextClient = e.target.value;
-                setSelectedClient(nextClient);
-                const firstMonth = reports.find(
-                  (r) => r.client_name === nextClient
-                )?.report_month;
-                if (firstMonth) setSelectedMonth(firstMonth);
-              }}
+              onChange={(e) => setSelectedClient(e.target.value)}
               className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm text-white outline-none"
             >
               {clients.map((client) => (
@@ -198,6 +220,12 @@ export default function ReportsPage() {
           </div>
         </header>
 
+        {!report && (
+          <div className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 text-sm text-zinc-400">
+            No return data found for {reportClient} · {reportMonth}. Showing base monthly invoice only.
+          </div>
+        )}
+
         <section className="mb-8 grid gap-4 md:grid-cols-4">
           <MetricCard label="Total Returns" value={d.totalReturns ?? 0} />
           <MetricCard label="Kept" value={d.kept ?? 0} accent="green" />
@@ -207,18 +235,9 @@ export default function ReportsPage() {
 
         <section className="mb-8 grid gap-4 md:grid-cols-4">
           <MetricCard label="Keep Rate" value={`${d.keepRate ?? 0}%`} />
-          <MetricCard
-            label="Total Time"
-            value={`${d.totalTimeMinutes ?? 0} min`}
-          />
-          <MetricCard
-            label="Avg Time / Return"
-            value={`${d.avgMinutesPerReturn ?? 0} min`}
-          />
-          <MetricCard
-            label="Est. Resale Value"
-            value={`$${d.estimatedResaleValue ?? 0}`}
-          />
+          <MetricCard label="Total Time" value={`${d.totalTimeMinutes ?? 0} min`} />
+          <MetricCard label="Avg Time / Return" value={`${d.avgMinutesPerReturn ?? 0} min`} />
+          <MetricCard label="Est. Resale Value" value={`$${d.estimatedResaleValue ?? 0}`} />
         </section>
 
         <section className="mb-8 grid gap-6 lg:grid-cols-3">
@@ -227,7 +246,7 @@ export default function ReportsPage() {
               <div>
                 <h2 className="text-lg font-semibold">Keep vs Dispose</h2>
                 <p className="text-sm text-zinc-500">
-                  Breakdown for {report.report_month}
+                  Breakdown for {reportMonth}
                 </p>
               </div>
               <p className="text-sm text-zinc-500">
@@ -269,24 +288,11 @@ export default function ReportsPage() {
             <h2 className="text-lg font-semibold">Invoice Summary</h2>
             <div className="mt-5 space-y-4 text-sm">
               <Row label="Base Fee" value={`$${d.baseFee ?? 0}`} />
-              <Row
-                label="Included Returns"
-                value={`${d.includedReturns ?? 0}`}
-              />
-              <Row
-                label="Additional Returns"
-                value={`${d.additionalReturns ?? 0}`}
-              />
-              <Row
-                label="Additional Fees"
-                value={`$${d.additionalFees ?? 0}`}
-              />
+              <Row label="Included Returns" value={`${d.includedReturns ?? 0}`} />
+              <Row label="Additional Returns" value={`${d.additionalReturns ?? 0}`} />
+              <Row label="Additional Fees" value={`$${d.additionalFees ?? 0}`} />
               <div className="border-t border-zinc-800 pt-4">
-                <Row
-                  label="Total Due"
-                  value={`$${d.totalDue ?? 0}`}
-                  strong
-                />
+                <Row label="Total Due" value={`$${d.totalDue ?? 0}`} strong />
               </div>
             </div>
           </div>
@@ -300,61 +306,65 @@ export default function ReportsPage() {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] text-left text-sm">
-              <thead className="border-b border-zinc-800 text-zinc-500">
-                <tr>
-                  <th className="px-6 py-4 font-medium">Date</th>
-                  <th className="px-6 py-4 font-medium">Item / SKU</th>
-                  <th className="px-6 py-4 font-medium">Carrier</th>
-                  <th className="px-6 py-4 font-medium">Qty</th>
-                  <th className="px-6 py-4 font-medium">Action</th>
-                  <th className="px-6 py-4 font-medium">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentReturns.map((item, index) => {
-                  const isKeep = item.actionTaken
-                    ?.toLowerCase()
-                    .includes("keep");
+          {recentReturns.length === 0 ? (
+            <div className="p-6 text-sm text-zinc-500">
+              No returns found for this report period.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] text-left text-sm">
+                <thead className="border-b border-zinc-800 text-zinc-500">
+                  <tr>
+                    <th className="px-6 py-4 font-medium">Date</th>
+                    <th className="px-6 py-4 font-medium">Item / SKU</th>
+                    <th className="px-6 py-4 font-medium">Carrier</th>
+                    <th className="px-6 py-4 font-medium">Qty</th>
+                    <th className="px-6 py-4 font-medium">Action</th>
+                    <th className="px-6 py-4 font-medium">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentReturns.map((item, index) => {
+                    const isKeep = item.actionTaken?.toLowerCase().includes("keep");
 
-                  return (
-                    <tr
-                      key={`${item.dateReceived}-${index}`}
-                      className="border-b border-zinc-900 last:border-0"
-                    >
-                      <td className="px-6 py-4 text-zinc-300">
-                        {item.dateReceived || "—"}
-                      </td>
-                      <td className="px-6 py-4 text-white">
-                        {item.itemSku || "Return Item"}
-                      </td>
-                      <td className="px-6 py-4 text-zinc-400">
-                        {item.carrier || "—"}
-                      </td>
-                      <td className="px-6 py-4 text-zinc-400">
-                        {item.qty ?? 1}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${
-                            isKeep
-                              ? "bg-emerald-500/10 text-emerald-400"
-                              : "bg-red-500/10 text-red-400"
-                          }`}
-                        >
-                          {item.actionTaken || item.status || "—"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-zinc-400">
-                        {item.notes || "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    return (
+                      <tr
+                        key={`${item.dateReceived}-${index}`}
+                        className="border-b border-zinc-900 last:border-0"
+                      >
+                        <td className="px-6 py-4 text-zinc-300">
+                          {item.dateReceived || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-white">
+                          {item.itemSku || "Return Item"}
+                        </td>
+                        <td className="px-6 py-4 text-zinc-400">
+                          {item.carrier || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-zinc-400">
+                          {item.qty ?? 1}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-medium ${
+                              isKeep
+                                ? "bg-emerald-500/10 text-emerald-400"
+                                : "bg-red-500/10 text-red-400"
+                            }`}
+                          >
+                            {item.actionTaken || item.status || "—"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-zinc-400">
+                          {item.notes || "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       </div>
     </main>
