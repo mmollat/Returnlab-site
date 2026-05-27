@@ -22,7 +22,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center opacity-45"
           style={{ backgroundImage: "url('/returnlab-conveyor-hero.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
           <div className="flex items-center justify-between">
