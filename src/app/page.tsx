@@ -28,6 +28,36 @@ export default function Home() {
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
+          <div className="flex items-center justify-between">
+            <img
+              src="/returnlab-logo-v2.jpg"
+              alt="ReturnLab Logistics"
+              className="h-14 w-auto object-contain md:h-16"
+            />
+
+            <nav className="hidden items-center gap-8 md:flex">
+              <a href="#services" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+                Services
+              </a>
+              <a href="#process" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+                How It Works
+              </a>
+              <a href="#pricing" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+                Pricing
+              </a>
+              <a href="#contact" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+                Contact
+              </a>
+            </nav>
+
+            <a
+              href="#contact"
+              className="hidden rounded-full border border-orange-500/60 px-5 py-3 text-xs font-bold uppercase tracking-[0.22em] text-orange-400 transition hover:bg-orange-500 hover:text-black md:inline-flex"
+            >
+              Partner With Us →
+            </a>
+          </div>
+
           <div className="grid min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[0.85fr_1.15fr]">
             <div className="hidden lg:block" />
             <div className="hidden lg:block" />
@@ -73,7 +103,7 @@ export default function Home() {
       </section>
 
       {/* SERVICES / WHY */}
-      <section className="px-6 py-20 md:px-10">
+      <section id="services" className="px-6 py-20 md:px-10">
         <div className="mx-auto max-w-7xl">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
             Why ReturnLab
@@ -83,7 +113,7 @@ export default function Home() {
             Built To Save You Time And Money
           </h2>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
             {[
               "Package Receiving",
               "Returns Processing",
@@ -106,7 +136,10 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section className="border-y border-white/10 bg-white/[0.025] px-6 py-20 md:px-10">
+      <section
+        id="pricing"
+        className="border-y border-white/10 bg-white/[0.025] px-6 py-20 md:px-10"
+      >
         <div className="mx-auto max-w-7xl text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-orange-500">
             Pricing
