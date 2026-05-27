@@ -114,7 +114,6 @@ export default function Home() {
               ["01", "Return Shipped", "Customers ship returns to our U.S. facility."],
               ["02", "Received & Inspected", "We inspect, categorize, and document each item."],
               ["03", "Logged & Reported", "Condition, notes, and action are recorded."],
-              ["04", "Monthly Reporting", "Clients receive clear return activity reports."],
             ].map(([num, title, body]) => (
               <div key={title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
                 <div className="mb-8 text-sm font-black text-orange-500">{num}</div>
