@@ -74,19 +74,6 @@ export default function Home() {
             </div>
 
             <div className="hidden lg:block" />
-              {[
-                ["1.6 Days", "Avg. Processing Time"],
-                ["98.7%", "Inspection Accuracy"],
-                ["U.S.", "Return Facility"],
-                ["Monthly", "Client Reporting"],
-              ].map(([value, label]) => (
-                <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-                  <div className="mb-5 h-10 w-10 rounded-full border border-orange-500/50 bg-orange-500/10" />
-                  <div className="text-3xl font-black">{value}</div>
-                  <div className="mt-2 text-sm text-white/60">{label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
