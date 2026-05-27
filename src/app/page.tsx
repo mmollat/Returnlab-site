@@ -28,7 +28,7 @@ export default function Home() {
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
-          <div className="flex items-center justify-between">
+          <div className="ml-[340px] flex items-center gap-10">
             <nav className="hidden items-center gap-8 md:flex">
               <a href="#services" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
                 Services
