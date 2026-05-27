@@ -30,7 +30,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
           <div className="flex items-center justify-between">
             <img
-              src="/returnlab-logo-v2.jpg"
+              src="/returnlab-logo-v2.png"
               alt="ReturnLab Logistics"
               className="h-14 w-auto object-contain md:h-16"
             />
