@@ -129,36 +129,6 @@ export default function Home() {
                   Returns Over Time
                 </div>
 
-                <div className="mt-16 h-20 rounded-xl border border-orange-500/20 bg-orange-500/10" />
-              </div>
-
-              <div className="h-56 rounded-2xl border border-white/10 bg-white/[0.035] p-5">
-                <div className="text-sm font-bold text-white/70">
-                  Disposition Breakdown
-                </div>
-
-                <div className="mx-auto mt-10 h-28 w-28 rounded-full border-[18px] border-orange-500/70" />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-center">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
-              Real-Time Visibility
-            </p>
-
-            <h2 className="mt-4 text-4xl font-black uppercase leading-none md:text-5xl">
-              Data You Can Act On
-            </h2>
-
-            <p className="mt-6 text-white/60">
-              Clients get visibility into every return, inspection result,
-              disposition decision, and monthly activity summary.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* SERVICES / WHY */}
       <section className="px-6 py-20 md:px-10">
         <div className="mx-auto max-w-7xl">
