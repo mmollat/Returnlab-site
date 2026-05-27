@@ -32,7 +32,7 @@ export default function Home() {
             <img
               src="/returnlab-logo-v2.png"
               alt="ReturnLab Logistics"
-              className="h-14 w-auto object-contain md:h-16"
+              className="h-24 w-auto md:h-28"
             />
 
             <nav className="hidden items-center gap-8 md:flex">
