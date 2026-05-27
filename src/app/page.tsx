@@ -28,13 +28,7 @@ export default function Home() {
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
-          <div className="flex items-center justify-between">
-            <img
-              src="/returnlab-logo-v2.png"
-              alt="ReturnLab Logistics"
-              className="h-24 w-auto md:h-28"
-            />
-
+          <div className="flex items-center justify-center">
             <nav className="hidden items-center gap-8 md:flex">
               <a href="#services" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
                 Services
