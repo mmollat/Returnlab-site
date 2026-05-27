@@ -20,7 +20,7 @@ export default function Home() {
       <section className="relative overflow-hidden border-b border-white/10">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-45"
-          style={{ backgroundImage: "url('/returnlab-conveyor-hero.jpg')" }}
+          style={{ backgroundImage: "url('/returnlab-conveyor-hero.png')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-black/35" />
 
