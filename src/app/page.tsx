@@ -89,8 +89,6 @@ export default function Home() {
               "Returns Processing",
               "Item Inspection",
               "Disposal Services",
-              "Resale / Liquidation Support",
-              "Monthly Reporting",
             ].map((item) => (
               <div
                 key={item}
