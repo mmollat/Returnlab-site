@@ -21,7 +21,7 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/10">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-100"
+          className="absolute inset-0 bg-cover bg-[center_top] opacity-100"
           style={{
             backgroundImage: "url('/returnlab-conveyor-hero.png')",
           }}
