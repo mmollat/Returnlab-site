@@ -36,10 +36,7 @@ export default function Home() {
       </section>
 
       {/* PROCESS */}
-      <section
-        id="process"
-        className="border-b border-white/10 px-6 py-20 md:px-10"
-      >
+      <section id="process" className="border-b border-white/10 px-6 py-20 md:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
@@ -51,83 +48,29 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 max-w-md text-white/60">
-              Every return is received, inspected, documented, and reported
-              through a clean operational workflow.
+              Every return is received, inspected, documented, and reported through a clean
+              operational workflow.
             </p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              [
-                "01",
-                "Return Shipped",
-                "Customers ship returns to our U.S. facility.",
-              ],
-              [
-                "02",
-                "Received & Inspected",
-                "We inspect, categorize, and document each item.",
-              ],
-              [
-                "03",
-                "Logged & Reported",
-                "Condition, notes, and action are recorded.",
-              ],
+              ["01", "Return Shipped", "Customers ship returns to our U.S. facility."],
+              ["02", "Received & Inspected", "We inspect, categorize, and document each item."],
+              ["03", "Logged & Reported", "Condition, notes, and action are recorded."],
             ].map(([num, title, body]) => (
               <div
                 key={title}
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
               >
-                <div className="mb-8 text-sm font-black text-orange-500">
-                  {num}
-                </div>
-
+                <div className="mb-8 text-sm font-black text-orange-500">{num}</div>
                 <h3 className="font-black">{title}</h3>
-
-                <p className="mt-3 text-sm leading-6 text-white/55">
-                  {body}
-                </p>
+                <p className="mt-3 text-sm leading-6 text-white/55">{body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-
-      {/* DASHBOARD */}
-      <section className="border-b border-white/10 px-6 py-20 md:px-10">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.2fr_.8fr]">
-          <div className="rounded-[28px] border border-white/10 bg-[#0b0b0b] p-6 shadow-2xl">
-            <div className="mb-6 flex items-center justify-between">
-              <div className="font-black">ReturnLab Dashboard</div>
-
-              <div className="rounded-full bg-orange-500/10 px-3 py-1 text-xs text-orange-400">
-                Monthly Report
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-4">
-              {[
-                ["Total Returns", "12,842"],
-                ["Approved / Keep", "7,532"],
-                ["Dispose", "5,310"],
-                ["Avg. Time", "1.6d"],
-              ].map(([item, value]) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
-                >
-                  <div className="text-xs text-white/45">{item}</div>
-
-                  <div className="mt-3 text-2xl font-black">{value}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <div className="h-56 rounded-2xl border border-white/10 bg-gradient-to-t from-orange-500/20 to-white/[0.03] p-5">
-                <div className="text-sm font-bold text-white/70">
-                  Returns Over Time
-                </div>
 
       {/* SERVICES / WHY */}
       <section className="px-6 py-20 md:px-10">
@@ -154,12 +97,9 @@ export default function Home() {
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
               >
                 <div className="mb-5 h-10 w-10 rounded-full border border-orange-500/50 bg-orange-500/10" />
-
                 <h3 className="font-black">{item}</h3>
-
                 <p className="mt-3 text-sm leading-6 text-white/55">
-                  Clean, reliable operational support designed for growing
-                  e-commerce sellers.
+                  Clean, reliable operational support designed for growing e-commerce sellers.
                 </p>
               </div>
             ))}
@@ -179,8 +119,7 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-white/60">
-            Simple, scalable return handling for international e-commerce
-            sellers.
+            Simple, scalable return handling for international e-commerce sellers.
           </p>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -220,10 +159,7 @@ export default function Home() {
 
                 <div className="mt-4 text-4xl font-black">
                   {plan.price}
-                  <span className="text-base font-normal text-white/45">
-                    {" "}
-                    / mo
-                  </span>
+                  <span className="text-base font-normal text-white/45"> / mo</span>
                 </div>
 
                 <p className="mt-3 text-white/60">{plan.detail}</p>
@@ -241,16 +177,11 @@ export default function Home() {
           </h2>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65">
-            Contact us to discuss your package receiving, returns, inspection,
-            disposal, or liquidation needs.
+            Contact us to discuss your package receiving, returns, inspection, disposal, or
+            liquidation needs.
           </p>
 
-          <form
-            ref={formRef}
-            action="/api/contact"
-            method="POST"
-            className="mt-8 space-y-4"
-          >
+          <form ref={formRef} action="/api/contact" method="POST" className="mt-8 space-y-4">
             <input
               name="name"
               required
