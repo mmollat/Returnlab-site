@@ -7,7 +7,9 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
     const params = new URLSearchParams(window.location.search);
+
     if (params.get("fresh") === "1") {
       formRef.current?.reset();
       window.history.replaceState({}, "", "/");
@@ -19,67 +21,25 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/10">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-45"
-          style={{ backgroundImage: "url('/returnlab-conveyor-hero.png')" }}
+          className="absolute inset-0 bg-cover bg-center opacity-100"
+          style={{
+            backgroundImage: "url('/returnlab-conveyor-hero.png')",
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
-          <div className="flex items-center justify-between">
-            <img
-              src="/returnlab-logo-v2.jpg"
-              alt="ReturnLab Logistics logo"
-              className="h-20 w-auto object-contain md:h-24"
-            />
-
-            <a
-              href="#contact"
-              className="hidden rounded-full border border-orange-500/60 px-5 py-3 text-xs font-bold uppercase tracking-[0.22em] text-orange-400 transition hover:bg-orange-500 hover:text-black md:inline-flex"
-            >
-              Partner With Us →
-            </a>
-          </div>
-
           <div className="grid min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[0.85fr_1.15fr]">
-            <div>
-              <p className="mb-5 text-xs font-black uppercase tracking-[0.28em] text-orange-500">
-                U.S.-Based Returns & Reverse Logistics
-              </p>
-
-              <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] tracking-tight md:text-7xl">
-                Return Processing Built For{" "}
-                <span className="text-orange-500">Global Brands</span>
-              </h1>
-
-              <p className="mt-8 max-w-2xl text-lg leading-8 text-white/75">
-                Intake. Inspection. Reporting. ReturnLab handles your U.S.-based returns so your
-                team can reduce costs, move faster, and make better disposition decisions.
-              </p>
-
-              <div className="mt-10 flex flex-wrap gap-4">
-                <a
-                  href="#process"
-                  className="rounded-full bg-orange-500 px-7 py-4 text-sm font-black uppercase tracking-widest text-black transition hover:bg-orange-400"
-                >
-                  View Our Process →
-                </a>
-
-                <a
-                  href="#contact"
-                  className="rounded-full border border-white/25 px-7 py-4 text-sm font-black uppercase tracking-widest text-white transition hover:border-orange-500 hover:text-orange-400"
-                >
-                  Request Consultation
-                </a>
-              </div>
-            </div>
-
+            <div className="hidden lg:block" />
             <div className="hidden lg:block" />
           </div>
         </div>
       </section>
 
       {/* PROCESS */}
-      <section id="process" className="border-b border-white/10 px-6 py-20 md:px-10">
+      <section
+        id="process"
+        className="border-b border-white/10 px-6 py-20 md:px-10"
+      >
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
@@ -91,21 +51,42 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 max-w-md text-white/60">
-              Every return is received, inspected, documented, and reported through a clean
-              operational workflow.
+              Every return is received, inspected, documented, and reported
+              through a clean operational workflow.
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-4">
+          <div className="grid gap-5 md:grid-cols-3">
             {[
-              ["01", "Return Shipped", "Customers ship returns to our U.S. facility."],
-              ["02", "Received & Inspected", "We inspect, categorize, and document each item."],
-              ["03", "Logged & Reported", "Condition, notes, and action are recorded."],
+              [
+                "01",
+                "Return Shipped",
+                "Customers ship returns to our U.S. facility.",
+              ],
+              [
+                "02",
+                "Received & Inspected",
+                "We inspect, categorize, and document each item.",
+              ],
+              [
+                "03",
+                "Logged & Reported",
+                "Condition, notes, and action are recorded.",
+              ],
             ].map(([num, title, body]) => (
-              <div key={title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
-                <div className="mb-8 text-sm font-black text-orange-500">{num}</div>
+              <div
+                key={title}
+                className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
+              >
+                <div className="mb-8 text-sm font-black text-orange-500">
+                  {num}
+                </div>
+
                 <h3 className="font-black">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/55">{body}</p>
+
+                <p className="mt-3 text-sm leading-6 text-white/55">
+                  {body}
+                </p>
               </div>
             ))}
           </div>
@@ -118,6 +99,7 @@ export default function Home() {
           <div className="rounded-[28px] border border-white/10 bg-[#0b0b0b] p-6 shadow-2xl">
             <div className="mb-6 flex items-center justify-between">
               <div className="font-black">ReturnLab Dashboard</div>
+
               <div className="rounded-full bg-orange-500/10 px-3 py-1 text-xs text-orange-400">
                 Monthly Report
               </div>
@@ -130,8 +112,12 @@ export default function Home() {
                 ["Dispose", "5,310"],
                 ["Avg. Time", "1.6d"],
               ].map(([item, value]) => (
-                <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div
+                  key={item}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                >
                   <div className="text-xs text-white/45">{item}</div>
+
                   <div className="mt-3 text-2xl font-black">{value}</div>
                 </div>
               ))}
@@ -139,12 +125,18 @@ export default function Home() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="h-56 rounded-2xl border border-white/10 bg-gradient-to-t from-orange-500/20 to-white/[0.03] p-5">
-                <div className="text-sm font-bold text-white/70">Returns Over Time</div>
+                <div className="text-sm font-bold text-white/70">
+                  Returns Over Time
+                </div>
+
                 <div className="mt-16 h-20 rounded-xl border border-orange-500/20 bg-orange-500/10" />
               </div>
 
               <div className="h-56 rounded-2xl border border-white/10 bg-white/[0.035] p-5">
-                <div className="text-sm font-bold text-white/70">Disposition Breakdown</div>
+                <div className="text-sm font-bold text-white/70">
+                  Disposition Breakdown
+                </div>
+
                 <div className="mx-auto mt-10 h-28 w-28 rounded-full border-[18px] border-orange-500/70" />
               </div>
             </div>
@@ -160,8 +152,8 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 text-white/60">
-              Clients get visibility into every return, inspection result, disposition decision,
-              and monthly activity summary.
+              Clients get visibility into every return, inspection result,
+              disposition decision, and monthly activity summary.
             </p>
           </div>
         </div>
@@ -187,11 +179,17 @@ export default function Home() {
               "Resale / Liquidation Support",
               "Monthly Reporting",
             ].map((item) => (
-              <div key={item} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
+              <div
+                key={item}
+                className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
+              >
                 <div className="mb-5 h-10 w-10 rounded-full border border-orange-500/50 bg-orange-500/10" />
+
                 <h3 className="font-black">{item}</h3>
+
                 <p className="mt-3 text-sm leading-6 text-white/55">
-                  Clean, reliable operational support designed for growing e-commerce sellers.
+                  Clean, reliable operational support designed for growing
+                  e-commerce sellers.
                 </p>
               </div>
             ))}
@@ -211,7 +209,8 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-white/60">
-            Simple, scalable return handling for international e-commerce sellers.
+            Simple, scalable return handling for international e-commerce
+            sellers.
           </p>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -251,28 +250,15 @@ export default function Home() {
 
                 <div className="mt-4 text-4xl font-black">
                   {plan.price}
-                  <span className="text-base font-normal text-white/45"> / mo</span>
+                  <span className="text-base font-normal text-white/45">
+                    {" "}
+                    / mo
+                  </span>
                 </div>
 
                 <p className="mt-3 text-white/60">{plan.detail}</p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-10 flex justify-center gap-4">
-            <a
-              href="/pricing"
-              className="rounded-full bg-orange-500 px-6 py-3 font-bold text-black transition hover:bg-orange-400"
-            >
-              View Full Pricing
-            </a>
-
-            <a
-              href="#contact"
-              className="rounded-full border border-white/20 px-6 py-3 font-bold text-white transition hover:border-orange-500 hover:text-orange-400"
-            >
-              Get Started
-            </a>
           </div>
         </div>
       </section>
@@ -285,11 +271,16 @@ export default function Home() {
           </h2>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65">
-            Contact us to discuss your package receiving, returns, inspection, disposal, or
-            liquidation needs.
+            Contact us to discuss your package receiving, returns, inspection,
+            disposal, or liquidation needs.
           </p>
 
-          <form ref={formRef} action="/api/contact" method="POST" className="mt-8 space-y-4">
+          <form
+            ref={formRef}
+            action="/api/contact"
+            method="POST"
+            className="mt-8 space-y-4"
+          >
             <input
               name="name"
               required
