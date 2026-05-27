@@ -40,7 +40,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="grid min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[1.05fr_.95fr]">
+          <div className="grid min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[0.85fr_1.15fr]">
             <div>
               <p className="mb-5 text-xs font-black uppercase tracking-[0.28em] text-orange-500">
                 U.S.-Based Returns & Reverse Logistics
@@ -73,7 +73,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid gap-4 rounded-[28px] border border-white/10 bg-black/55 p-5 shadow-2xl backdrop-blur-xl md:grid-cols-2">
+            <div className="hidden lg:block" />
               {[
                 ["1.6 Days", "Avg. Processing Time"],
                 ["98.7%", "Inspection Accuracy"],
