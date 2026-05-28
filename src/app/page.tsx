@@ -163,74 +163,86 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section
-        id="pricing"
-        className="border-y border-white/10 bg-white/[0.025] px-6 py-20 md:px-10"
-      >
-        <div className="mx-auto max-w-7xl text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-orange-500">
-            Pricing
-          </p>
+<section
+  id="pricing"
+  className="border-y border-white/10 bg-white/[0.025] px-6 py-20 md:px-10"
+>
+  <div className="mx-auto max-w-7xl text-center">
+    <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-orange-500">
+      Pricing
+    </p>
 
-          <h2 className="text-4xl font-black uppercase md:text-5xl">
-            Plans Starting At $300/Month
-          </h2>
+    <h2 className="text-4xl font-black uppercase md:text-5xl">
+      Simple Monthly Return Processing Plans
+    </h2>
 
-          <p className="mx-auto mt-5 max-w-2xl text-white/60">
-            Simple, scalable return handling for international e-commerce
-            sellers.
-          </p>
+    <p className="mx-auto mt-5 max-w-2xl text-white/60">
+      Built for international e-commerce sellers who need a reliable U.S.-based return handling partner.
+    </p>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {[
-              {
-                name: "Starter",
-                price: "$300",
-                detail: "Up to 50 returns/month",
-              },
-              {
-                name: "Growth",
-                price: "$500",
-                detail: "Up to 120 returns/month",
-                featured: true,
-              },
-              {
-                name: "Scale",
-                price: "$800",
-                detail: "Up to 250 returns/month",
-              },
-            ].map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-[28px] border p-6 text-left shadow-sm ${
-                  plan.featured
-                    ? "border-orange-500 bg-orange-500/10"
-                    : "border-white/10 bg-white/[0.035]"
-                }`}
-              >
-                {plan.featured && (
-                  <div className="mb-4 inline-block rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-black">
-                    Most Popular
-                  </div>
-                )}
+    <div className="mt-12 grid gap-6 md:grid-cols-3">
+      {[
+        {
+          name: "Starter",
+          price: "$300",
+          included: "Up to 50 returns/month",
+          extra: "$3.00 per additional return",
+          best: "Best for testing U.S. return handling.",
+        },
+        {
+          name: "Growth",
+          price: "$500",
+          included: "Up to 120 returns/month",
+          extra: "$2.50 per additional return",
+          best: "Best for active sellers with steady volume.",
+          featured: true,
+        },
+        {
+          name: "Scale",
+          price: "$800",
+          included: "Up to 250 returns/month",
+          extra: "$2.00 per additional return",
+          best: "Best for higher-volume sellers.",
+        },
+      ].map((plan) => (
+        <div
+          key={plan.name}
+          className={`rounded-[28px] border p-6 text-left shadow-sm ${
+            plan.featured
+              ? "border-orange-500 bg-orange-500/10"
+              : "border-white/10 bg-white/[0.035]"
+          }`}
+        >
+          {plan.featured && (
+            <div className="mb-4 inline-block rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-black">
+              Most Popular
+            </div>
+          )}
 
-                <h3 className="text-xl font-black">{plan.name}</h3>
+          <h3 className="text-xl font-black">{plan.name}</h3>
 
-                <div className="mt-4 text-4xl font-black">
-                  {plan.price}
-                  <span className="text-base font-normal text-white/45">
-                    {" "}
-                    / mo
-                  </span>
-                </div>
+          <div className="mt-4 text-4xl font-black">
+            {plan.price}
+            <span className="text-base font-normal text-white/45"> / mo</span>
+          </div>
 
-                <p className="mt-3 text-white/60">{plan.detail}</p>
-              </div>
-            ))}
+          <div className="mt-6 space-y-3 text-sm text-white/65">
+            <p>{plan.included}</p>
+            <p>{plan.extra}</p>
+            <p>{plan.best}</p>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
 
+    <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-white/10 bg-black/30 p-6 text-left text-sm leading-7 text-white/60">
+      <p>
+        All plans include package receiving, return logging, basic item inspection, condition notes,
+        and disposition handling. High-volume or custom workflows are available by request.
+      </p>
+    </div>
+  </div>
+</section>
       {/* CONTACT */}
       <section id="contact" className="px-6 pb-24 pt-20 md:px-10">
         <div className="mx-auto max-w-7xl rounded-[32px] border border-orange-500/25 bg-gradient-to-br from-orange-500/15 to-white/[0.03] p-7 md:p-10">
