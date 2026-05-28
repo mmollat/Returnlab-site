@@ -19,18 +19,16 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#050505] text-white">
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div
-          className="absolute inset-0 bg-cover bg-top md:bg-[center_top] opacity-100"
-          style={{
-            backgroundImage: "url('/returnlab-conveyor-hero.png')",
-          }}
+      <section className="relative overflow-hidden border-b border-white/10 bg-black">
+        <img
+          src="/returnlab-conveyor-hero.png"
+          alt="ReturnLab hero banner"
+          className="h-auto w-full"
         />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
-          {/* NAVBAR */}
-          <div className="ml-auto flex items-center justify-end gap-16">
-            <nav className="hidden items-center gap-8 md:flex">
+        <div className="absolute inset-x-0 top-0 z-10 mx-auto max-w-7xl px-4 py-4 md:px-8 md:py-6">
+          <div className="flex items-center justify-end gap-6 lg:gap-10">
+            <nav className="hidden items-center gap-6 md:flex lg:gap-8">
               <a
                 href="#services"
                 className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
@@ -66,12 +64,6 @@ export default function Home() {
             >
               Partner With Us →
             </a>
-          </div>
-
-          {/* HERO SPACING */}
-          <div className="grid min-h-[520px] md:min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="hidden lg:block" />
-            <div className="hidden lg:block" />
           </div>
         </div>
       </section>
