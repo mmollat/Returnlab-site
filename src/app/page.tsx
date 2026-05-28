@@ -21,25 +21,41 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-white/10">
         <div
-          className="absolute inset-0 bg-cover bg-[center_top] opacity-100"
+          className="absolute inset-0 bg-cover bg-top md:bg-[center_top] opacity-100"
           style={{
             backgroundImage: "url('/returnlab-conveyor-hero.png')",
           }}
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-8 md:px-10">
-          <div className="ml-[340px] flex items-center gap-10">
+          {/* NAVBAR */}
+          <div className="ml-auto flex items-center justify-end gap-16">
             <nav className="hidden items-center gap-8 md:flex">
-              <a href="#services" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+              <a
+                href="#services"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
+              >
                 Services
               </a>
-              <a href="#process" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+
+              <a
+                href="#process"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
+              >
                 How It Works
               </a>
-              <a href="#pricing" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+
+              <a
+                href="#pricing"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
+              >
                 Pricing
               </a>
-              <a href="#contact" className="text-sm font-bold uppercase tracking-wider text-white hover:text-orange-500">
+
+              <a
+                href="#contact"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
+              >
                 Contact
               </a>
             </nav>
@@ -52,7 +68,8 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="grid min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[0.85fr_1.15fr]">
+          {/* HERO SPACING */}
+          <div className="grid min-h-[520px] md:min-h-[680px] items-center gap-10 py-16 lg:grid-cols-[0.85fr_1.15fr]">
             <div className="hidden lg:block" />
             <div className="hidden lg:block" />
           </div>
@@ -60,7 +77,10 @@ export default function Home() {
       </section>
 
       {/* PROCESS */}
-      <section id="process" className="border-b border-white/10 px-6 py-20 md:px-10">
+      <section
+        id="process"
+        className="border-b border-white/10 px-6 py-20 md:px-10"
+      >
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
@@ -72,31 +92,49 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 max-w-md text-white/60">
-              Every return is received, inspected, documented, and reported through a clean
-              operational workflow.
+              Every return is received, inspected, documented, and reported
+              through a clean operational workflow.
             </p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              ["01", "Return Shipped", "Customers ship returns to our U.S. facility."],
-              ["02", "Received & Inspected", "We inspect, categorize, and document each item."],
-              ["03", "Logged & Reported", "Condition, notes, and action are recorded."],
+              [
+                "01",
+                "Return Shipped",
+                "Customers ship returns to our U.S. facility.",
+              ],
+              [
+                "02",
+                "Received & Inspected",
+                "We inspect, categorize, and document each item.",
+              ],
+              [
+                "03",
+                "Logged & Reported",
+                "Condition, notes, and action are recorded.",
+              ],
             ].map(([num, title, body]) => (
               <div
                 key={title}
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
               >
-                <div className="mb-8 text-sm font-black text-orange-500">{num}</div>
+                <div className="mb-8 text-sm font-black text-orange-500">
+                  {num}
+                </div>
+
                 <h3 className="font-black">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/55">{body}</p>
+
+                <p className="mt-3 text-sm leading-6 text-white/55">
+                  {body}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SERVICES / WHY */}
+      {/* SERVICES */}
       <section id="services" className="px-6 py-20 md:px-10">
         <div className="mx-auto max-w-7xl">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
@@ -119,9 +157,12 @@ export default function Home() {
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
               >
                 <div className="mb-5 h-10 w-10 rounded-full border border-orange-500/50 bg-orange-500/10" />
+
                 <h3 className="font-black">{item}</h3>
+
                 <p className="mt-3 text-sm leading-6 text-white/55">
-                  Clean, reliable operational support designed for growing e-commerce sellers.
+                  Clean, reliable operational support designed for growing
+                  e-commerce sellers.
                 </p>
               </div>
             ))}
@@ -144,7 +185,8 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-white/60">
-            Simple, scalable return handling for international e-commerce sellers.
+            Simple, scalable return handling for international e-commerce
+            sellers.
           </p>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -184,7 +226,10 @@ export default function Home() {
 
                 <div className="mt-4 text-4xl font-black">
                   {plan.price}
-                  <span className="text-base font-normal text-white/45"> / mo</span>
+                  <span className="text-base font-normal text-white/45">
+                    {" "}
+                    / mo
+                  </span>
                 </div>
 
                 <p className="mt-3 text-white/60">{plan.detail}</p>
@@ -202,11 +247,16 @@ export default function Home() {
           </h2>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65">
-            Contact us to discuss your package receiving, returns, inspection, disposal, or
-            liquidation needs.
+            Contact us to discuss your package receiving, returns, inspection,
+            disposal, or liquidation needs.
           </p>
 
-          <form ref={formRef} action="/api/contact" method="POST" className="mt-8 space-y-4">
+          <form
+            ref={formRef}
+            action="/api/contact"
+            method="POST"
+            className="mt-8 space-y-4"
+          >
             <input
               name="name"
               required
