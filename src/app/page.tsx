@@ -160,7 +160,13 @@ export default function Home() {
                 key={item.title}
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
               >
-                <div className="mb-5 h-10 w-10 rounded-full border border-orange-500/50 bg-orange-500/10" />
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-orange-500/40 bg-orange-500/10">
+  <img
+    src={item.icon}
+    alt=""
+    className="h-8 w-8 object-contain"
+  />
+</div>
 
                 <h3 className="font-black">{item.title}</h3>
 
