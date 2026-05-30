@@ -256,7 +256,7 @@ export default function Home() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
                 <img
-  src="/icons/package-receiving.png"
+  src="/icons/package-receiving-transparent.png"
   alt="Package Receiving"
   className="mb-5 h-14 w-14 object-contain"
 />
@@ -269,7 +269,7 @@ export default function Home() {
 
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
                 <img
-  src="/icons/item-inspection.png"
+  src="/icons/item-inspection-transparent.png"
   alt="Item Inspection"
   className="mb-5 h-14 w-14 object-contain"
 />
