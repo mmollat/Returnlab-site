@@ -18,51 +18,41 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white">
-            {/* HERO */}
-      <section className="relative min-h-[760px] overflow-hidden border-b border-white/10 bg-black md:min-h-[820px]">
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-white/10 bg-black">
         <img
           src="/returnlab-conveyor-hero.png"
-          alt="ReturnLab warehouse conveyor and package processing operation"
-          className="absolute inset-0 h-full w-full object-cover object-center opacity-80"
+          alt="ReturnLab hero banner"
+          className="h-auto w-full"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-black/50" />
-
-        <div className="relative z-10 mx-auto flex min-h-[760px] max-w-7xl flex-col px-6 py-5 md:min-h-[820px] md:px-10 md:py-7">
-          <header className="flex items-center justify-between gap-6">
-            <a
-              href="/"
-              className="text-sm font-black uppercase tracking-[0.35em] text-white"
-            >
-              Return<span className="text-orange-500">Lab</span>
-            </a>
-
+        <div className="absolute inset-x-0 top-0 z-10 mx-auto max-w-7xl px-4 py-4 md:px-8 md:py-6">
+          <div className="flex items-center justify-end gap-6 lg:gap-10">
             <nav className="hidden items-center gap-6 md:flex lg:gap-8">
               <a
                 href="#services"
-                className="text-sm font-bold uppercase tracking-wider text-white/80 transition hover:text-orange-500"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
               >
                 Services
               </a>
 
               <a
                 href="#process"
-                className="text-sm font-bold uppercase tracking-wider text-white/80 transition hover:text-orange-500"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
               >
                 How It Works
               </a>
 
               <a
                 href="#pricing"
-                className="text-sm font-bold uppercase tracking-wider text-white/80 transition hover:text-orange-500"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
               >
                 Pricing
               </a>
 
               <a
                 href="#contact"
-                className="text-sm font-bold uppercase tracking-wider text-white/80 transition hover:text-orange-500"
+                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
               >
                 Contact
               </a>
@@ -74,59 +64,11 @@ export default function Home() {
             >
               Partner With Us →
             </a>
-          </header>
-
-          <div className="flex flex-1 items-center">
-            <div className="max-w-4xl py-20">
-              <p className="mb-5 inline-flex rounded-full border border-orange-500/40 bg-orange-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-orange-400">
-                U.S. Returns Processing
-              </p>
-
-              <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.92] tracking-tight md:text-7xl lg:text-8xl">
-                Reverse logistics built for growing e-commerce sellers.
-              </h1>
-
-              <p className="mt-7 max-w-2xl text-base leading-8 text-white/70 md:text-lg">
-                ReturnLab receives, inspects, logs, reports, stores, and
-                disposes of returned inventory so international sellers can
-                operate in the U.S. without building a warehouse team.
-              </p>
-
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center justify-center rounded-full bg-orange-500 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black transition hover:bg-orange-400"
-                >
-                  Start Processing Returns
-                </a>
-
-                <a
-                  href="#process"
-                  className="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:border-orange-500 hover:text-orange-400"
-                >
-                  See Workflow
-                </a>
-              </div>
-
-              <div className="mt-12 grid max-w-3xl gap-4 sm:grid-cols-3">
-                {[
-                  ["Receiving", "Package intake"],
-                  ["Inspection", "Condition notes"],
-                  ["Reporting", "Monthly summaries"],
-                ].map(([title, body]) => (
-                  <div
-                    key={title}
-                    className="rounded-3xl border border-white/10 bg-black/45 p-5 backdrop-blur"
-                  >
-                    <p className="text-lg font-black text-white">{title}</p>
-                    <p className="mt-2 text-sm text-white/50">{body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
+
+      {/* PROCESS */}
       <section
         id="process"
         className="border-b border-white/10 px-6 py-20 md:px-10"
