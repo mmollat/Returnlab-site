@@ -48,7 +48,7 @@ const SUPABASE_URL = "https://vtrilxvdqnvnbzgpokpr.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_0bY7s0G4JPIxcVBXB2V0pA_7lDgnDR1";
 
 const DEFAULT_BASE_FEE = 800;
-const DEFAULT_INCLUDED_RETURNS = 80;
+const DEFAULT_INCLUDED_RETURNS = 120;
 
 function emptyReportData(client: string, month: string): ReportData {
   return {
