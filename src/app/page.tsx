@@ -255,11 +255,13 @@ export default function Home() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
-                <img
-  src="/icons/package-receiving-transparent.png"
-  alt="Package Receiving"
-  className="mb-5 h-14 w-14 object-contain"
-/>
+                <div className="mb-5 flex h-18 w-18 items-center justify-center rounded-3xl border border-orange-500/40 bg-orange-500/10">
+  <img
+    src="/icons/package-receiving-transparent.png"
+    alt="Package Receiving"
+    className="h-10 w-10 object-contain"
+  />
+</div>
                 <h3 className="text-xl font-black">Full-Service Returns</h3>
                 <p className="mt-3 text-sm leading-7 text-white/60">
                   Receiving, inspection, logging, reporting, storage, and
@@ -268,11 +270,13 @@ export default function Home() {
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
-                <img
-  src="/icons/item-inspection-transparent.png"
-  alt="Item Inspection"
-  className="mb-5 h-14 w-14 object-contain"
-/>
+                <div className="mb-5 flex h-18 w-18 items-center justify-center rounded-3xl border border-orange-500/40 bg-orange-500/10">
+  <img
+    src="/icons/item-inspection-transparent.png"
+    alt="Item Inspection"
+    className="h-10 w-10 object-contain"
+  />
+</div>
                 <h3 className="text-xl font-black">Detailed Inspection</h3>
                 <p className="mt-3 text-sm leading-7 text-white/60">
                   Condition notes, photo documentation, and secure inventory
