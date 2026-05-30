@@ -237,7 +237,7 @@ export default function Home() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
-                <div className="mb-5 h-12 w-12 rounded-2xl border border-orange-500/40 bg-orange-500/10" />
+                <div className="mb-5 text-5xl">📦</div>
                 <h3 className="text-xl font-black">Full-Service Returns</h3>
                 <p className="mt-3 text-sm leading-7 text-white/60">
                   Receiving, inspection, logging, reporting, storage, and
@@ -246,7 +246,7 @@ export default function Home() {
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
-                <div className="mb-5 h-12 w-12 rounded-2xl border border-orange-500/40 bg-orange-500/10" />
+                <div className="mb-5 text-5xl">🔍</div>
                 <h3 className="text-xl font-black">Detailed Inspection</h3>
                 <p className="mt-3 text-sm leading-7 text-white/60">
                   Condition notes, photo documentation, and secure inventory
