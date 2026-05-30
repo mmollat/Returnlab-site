@@ -141,19 +141,19 @@ export default function Home() {
             {[
   {
     title: "Package Receiving",
-    icon: "/icons/package-receiving.png",
+    icon: "/icons/package-receiving-transparent.png",
   },
   {
     title: "Returns Processing",
-    icon: "/icons/returns-processing.png",
+    icon: "/icons/returns-processing-transparent.png",
   },
   {
     title: "Item Inspection",
-    icon: "/icons/item-inspection.png",
+    icon: "/icons/item-inspection-transparent.png",
   },
   {
     title: "Disposal Services",
-    icon: "/icons/disposal-services.png",
+    icon: "/icons/disposal-services-transparent.png",
   },
 ].map((item) => (
               <div
