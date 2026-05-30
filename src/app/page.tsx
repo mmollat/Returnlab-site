@@ -139,11 +139,23 @@ export default function Home() {
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {[
-              "Package Receiving",
-              "Returns Processing",
-              "Item Inspection",
-              "Disposal Services",
-            ].map((item) => (
+  {
+    title: "Package Receiving",
+    icon: "/icons/package-receiving.png",
+  },
+  {
+    title: "Returns Processing",
+    icon: "/icons/returns-processing.png",
+  },
+  {
+    title: "Item Inspection",
+    icon: "/icons/item-inspection.png",
+  },
+  {
+    title: "Disposal Services",
+    icon: "/icons/disposal-services.png",
+  },
+].map((item) => (
               <div
                 key={item}
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
