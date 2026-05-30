@@ -157,12 +157,12 @@ export default function Home() {
   },
 ].map((item) => (
               <div
-                key={item}
+                key={item.title}
                 className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
               >
                 <div className="mb-5 h-10 w-10 rounded-full border border-orange-500/50 bg-orange-500/10" />
 
-                <h3 className="font-black">{item}</h3>
+                <h3 className="font-black">{item.title}</h3>
 
                 <p className="mt-3 text-sm leading-6 text-white/55">
                   Clean, reliable operational support designed for growing
