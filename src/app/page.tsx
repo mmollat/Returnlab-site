@@ -29,31 +29,16 @@ export default function Home() {
         <div className="absolute inset-x-0 top-0 z-10 mx-auto max-w-7xl px-4 py-4 md:px-8 md:py-6">
           <div className="flex items-center justify-end gap-6 lg:gap-10">
             <nav className="hidden items-center gap-6 md:flex lg:gap-8">
-              <a
-                href="#services"
-                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
-              >
+              <a href="#services" className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500">
                 Services
               </a>
-
-              <a
-                href="#process"
-                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
-              >
+              <a href="#process" className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500">
                 How It Works
               </a>
-
-              <a
-                href="#pricing"
-                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
-              >
+              <a href="#pricing" className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500">
                 Pricing
               </a>
-
-              <a
-                href="#contact"
-                className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500"
-              >
+              <a href="#contact" className="text-sm font-bold uppercase tracking-wider text-white transition hover:text-orange-500">
                 Contact
               </a>
             </nav>
@@ -69,10 +54,7 @@ export default function Home() {
       </section>
 
       {/* PROCESS */}
-      <section
-        id="process"
-        className="border-b border-white/10 px-6 py-20 md:px-10"
-      >
+      <section id="process" className="border-b border-white/10 px-6 py-20 md:px-10">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
@@ -84,44 +66,60 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 max-w-md text-white/60">
-              Every return is received, inspected, documented, and reported
-              through a clean operational workflow.
+              Every return is received, inspected, documented, and reported through a clean operational workflow.
             </p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              [
-                "01",
-                "Return Shipped",
-                "Customers ship returns to our U.S. facility.",
-              ],
-              [
-                "02",
-                "Received & Inspected",
-                "We inspect, categorize, and document each item.",
-              ],
-              [
-                "03",
-                "Logged & Reported",
-                "Condition, notes, and action are recorded.",
-              ],
+              ["01", "Return Shipped", "Customers ship returns to our U.S. facility."],
+              ["02", "Received & Inspected", "We inspect, categorize, and document each item."],
+              ["03", "Logged & Reported", "Condition, notes, and action are recorded."],
             ].map(([num, title, body]) => (
-              <div
-                key={title}
-                className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-              >
-                <div className="mb-8 text-sm font-black text-orange-500">
-                  {num}
-                </div>
-
+              <div key={title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
+                <div className="mb-8 text-sm font-black text-orange-500">{num}</div>
                 <h3 className="font-black">{title}</h3>
-
-                <p className="mt-3 text-sm leading-6 text-white/55">
-                  {body}
-                </p>
+                <p className="mt-3 text-sm leading-6 text-white/55">{body}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* POSITIONING */}
+      <section className="border-b border-white/10 bg-white/[0.02] px-6 py-20 md:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-orange-500">
+              Boutique Returns Partner
+            </p>
+
+            <h2 className="mt-4 text-4xl font-black uppercase leading-none md:text-5xl">
+              Built For Independent Cross-Border Sellers
+            </h2>
+          </div>
+
+          <div className="space-y-6 text-base leading-8 text-white/65">
+            <p>
+              ReturnLab is designed for independent e-commerce sellers who need a reliable U.S.-based return address, package receiving, item inspection, documentation, and disposition support without the cost or complexity of a large commercial 3PL.
+            </p>
+
+            <p>
+              We are not a dock-based warehouse built for semi-truck volume or massive corporate networks. Our boutique operating model is intentionally lean, flexible, and hands-on — ideal for sellers who need personal communication, fast handling, and practical return support.
+            </p>
+
+            <div className="grid gap-4 pt-2 md:grid-cols-2">
+              {[
+                "Private U.S. return partner",
+                "Ideal for cross-border sellers",
+                "Flexible monthly workflows",
+                "Direct communication",
+              ].map((item) => (
+                <div key={item} className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm font-bold text-white/75">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -134,45 +132,37 @@ export default function Home() {
           </p>
 
           <h2 className="mt-4 max-w-2xl text-4xl font-black uppercase leading-none md:text-5xl">
-            Built To Save You Time And Money
+            Personal Return Support Without 3PL Complexity
           </h2>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {[
-  {
-    title: "Package Receiving",
-    icon: "/icons/package-receiving-transparent.png",
-  },
-  {
-    title: "Returns Processing",
-    icon: "/icons/returns-processing-transparent.png",
-  },
-  {
-    title: "Item Inspection",
-    icon: "/icons/item-inspection-transparent.png",
-  },
-  {
-    title: "Disposal Services",
-    icon: "/icons/disposal-services-transparent.png",
-  },
-].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-              >
+              {
+                title: "Package Receiving",
+                icon: "/icons/package-receiving-transparent.png",
+              },
+              {
+                title: "Returns Processing",
+                icon: "/icons/returns-processing-transparent.png",
+              },
+              {
+                title: "Item Inspection",
+                icon: "/icons/item-inspection-transparent.png",
+              },
+              {
+                title: "Disposal Services",
+                icon: "/icons/disposal-services-transparent.png",
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-orange-500/40 bg-orange-500/10">
-  <img
-    src={item.icon}
-    alt=""
-    className="h-8 w-8 object-contain"
-  />
-</div>
+                  <img src={item.icon} alt="" className="h-8 w-8 object-contain" />
+                </div>
 
                 <h3 className="font-black">{item.title}</h3>
 
                 <p className="mt-3 text-sm leading-6 text-white/55">
-                  Clean, reliable operational support designed for growing
-                  e-commerce sellers.
+                  Boutique, hands-on support designed for independent e-commerce sellers who need dependable U.S.-based return handling.
                 </p>
               </div>
             ))}
@@ -180,11 +170,8 @@ export default function Home() {
         </div>
       </section>
 
-            {/* PRICING */}
-      <section
-        id="pricing"
-        className="border-y border-white/10 bg-white/[0.025] px-6 py-24 md:px-10"
-      >
+      {/* PRICING */}
+      <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-6 py-24 md:px-10">
         <div className="mx-auto max-w-7xl text-center">
           <p className="mb-4 text-sm font-black uppercase tracking-[0.35em] text-orange-500">
             Pricing
@@ -195,9 +182,7 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-white/65 md:text-lg">
-            Every seller has different return volumes and operational requirements.
-            We build custom plans based on monthly volume, inspection needs,
-            storage requirements, and reporting frequency.
+            Every seller has different return volume, inspection needs, and reporting requirements. We build practical monthly plans for independent and cross-border sellers who need reliable U.S.-based return support.
           </p>
 
           <div className="mx-auto mt-12 grid max-w-5xl gap-8 rounded-[32px] border border-white/10 bg-black/35 p-7 text-left shadow-2xl shadow-black/30 md:grid-cols-[0.9fr_1.1fr] md:p-10">
@@ -222,10 +207,7 @@ export default function Home() {
                 "Scales with your growth",
                 "No long-term contracts",
               ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0"
-                >
+                <div key={item} className="flex items-center gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-orange-500 text-sm font-black text-orange-500">
                     ✓
                   </span>
@@ -256,44 +238,43 @@ export default function Home() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
                 <div className="mb-5 flex h-18 w-18 items-center justify-center rounded-3xl border border-orange-500/40 bg-orange-500/10">
-  <img
-    src="/icons/package-receiving-transparent.png"
-    alt="Package Receiving"
-    className="h-10 w-10 object-contain"
-  />
-</div>
+                  <img
+                    src="/icons/package-receiving-transparent.png"
+                    alt="Package Receiving"
+                    className="h-10 w-10 object-contain"
+                  />
+                </div>
                 <h3 className="text-xl font-black">Full-Service Returns</h3>
                 <p className="mt-3 text-sm leading-7 text-white/60">
-                  Receiving, inspection, logging, reporting, storage, and
-                  disposition handling.
+                  Receiving, inspection, logging, reporting, short-term holding, and disposition handling.
                 </p>
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
                 <div className="mb-5 flex h-18 w-18 items-center justify-center rounded-3xl border border-orange-500/40 bg-orange-500/10">
-  <img
-    src="/icons/item-inspection-transparent.png"
-    alt="Item Inspection"
-    className="h-10 w-10 object-contain"
-  />
-</div>
+                  <img
+                    src="/icons/item-inspection-transparent.png"
+                    alt="Item Inspection"
+                    className="h-10 w-10 object-contain"
+                  />
+                </div>
                 <h3 className="text-xl font-black">Detailed Inspection</h3>
                 <p className="mt-3 text-sm leading-7 text-white/60">
-                  Condition notes, photo documentation, and secure inventory
-                  tracking when needed.
+                  Condition notes, photo documentation, and return tracking when needed.
                 </p>
               </div>
             </div>
           </div>
 
           <p className="mt-10 text-sm leading-7 text-white/60">
-            Have unique requirements or high return volume?{" "}
+            Have unique requirements or steady monthly return volume?{" "}
             <a href="#contact" className="font-bold text-orange-500 hover:text-orange-400">
               Contact us and we’ll build a plan that fits.
             </a>
           </p>
         </div>
       </section>
+
       {/* CONTACT */}
       <section id="contact" className="px-6 pb-24 pt-20 md:px-10">
         <div className="mx-auto max-w-7xl rounded-[32px] border border-orange-500/25 bg-gradient-to-br from-orange-500/15 to-white/[0.03] p-7 md:p-10">
@@ -302,16 +283,10 @@ export default function Home() {
           </h2>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65">
-            Contact us to discuss your package receiving, returns, inspection,
-            disposal, or liquidation needs.
+            Contact us to discuss your U.S.-based return receiving, inspection, documentation, disposal, or custom return handling needs.
           </p>
 
-          <form
-            ref={formRef}
-            action="/api/contact"
-            method="POST"
-            className="mt-8 space-y-4"
-          >
+          <form ref={formRef} action="/api/contact" method="POST" className="mt-8 space-y-4">
             <input
               name="name"
               required
