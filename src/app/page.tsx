@@ -171,109 +171,113 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-6 py-24 md:px-10">
-        <div className="mx-auto max-w-7xl text-center">
-          <p className="mb-4 text-sm font-black uppercase tracking-[0.35em] text-orange-500">
-            Pricing
+<section
+  id="pricing"
+  className="border-y border-white/10 bg-white/[0.025] px-6 py-20 md:px-10"
+>
+  <div className="mx-auto max-w-7xl text-center">
+    <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-orange-500">
+      Pricing
+    </p>
+
+    <h2 className="text-4xl font-black uppercase md:text-5xl">
+      Transparent Monthly Pricing
+    </h2>
+
+    <p className="mx-auto mt-5 max-w-3xl text-white/60">
+      Simple, scalable return handling for international and cross-border
+      e-commerce sellers.
+    </p>
+
+    <div className="mt-12 grid gap-6 md:grid-cols-3">
+      {[
+        {
+          name: "Starter",
+          price: "$300",
+          included: "Up to 50 returns/month",
+          features: [
+            "Package Receiving",
+            "Return Logging",
+            "Basic Item Inspection",
+            "Monthly Reporting",
+          ],
+        },
+        {
+          name: "Growth",
+          price: "$500",
+          included: "Up to 120 returns/month",
+          featured: true,
+          features: [
+            "Everything in Starter",
+            "Priority Processing",
+            "Enhanced Reporting",
+            "Best Value",
+          ],
+        },
+        {
+          name: "Scale",
+          price: "Custom",
+          included: "250+ returns/month",
+          features: [
+            "Dedicated Workflows",
+            "Volume Discounts",
+            "Custom Reporting",
+            "Flexible Solutions",
+          ],
+        },
+      ].map((plan) => (
+        <div
+          key={plan.name}
+          className={`rounded-[28px] border p-6 text-left shadow-sm ${
+            plan.featured
+              ? "border-orange-500 bg-orange-500/10"
+              : "border-white/10 bg-white/[0.035]"
+          }`}
+        >
+          {plan.featured && (
+            <div className="mb-4 inline-block rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-black">
+              Most Popular
+            </div>
+          )}
+
+          <h3 className="text-xl font-black">{plan.name}</h3>
+
+          <div className="mt-4 text-4xl font-black">
+            {plan.price}
+            {plan.price !== "Custom" && (
+              <span className="text-base font-normal text-white/45">
+                {" "}
+                / mo
+              </span>
+            )}
+          </div>
+
+          <p className="mt-3 text-sm text-orange-400">
+            {plan.included}
           </p>
 
-          <h2 className="text-5xl font-black uppercase tracking-tight md:text-7xl">
-            Custom Pricing
-          </h2>
-
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-white/65 md:text-lg">
-            Every seller has different return volume, inspection needs, and reporting requirements. We build practical monthly plans for independent and cross-border sellers who need reliable U.S.-based return support.
-          </p>
-
-          <div className="mx-auto mt-12 grid max-w-5xl gap-8 rounded-[32px] border border-white/10 bg-black/35 p-7 text-left shadow-2xl shadow-black/30 md:grid-cols-[0.9fr_1.1fr] md:p-10">
-            <div className="flex flex-col justify-center border-white/10 md:border-r md:pr-10">
-              <p className="text-sm font-black uppercase tracking-[0.28em] text-orange-500">
-                Starting At
-              </p>
-
-              <div className="mt-5 flex items-end gap-3">
-                <span className="text-7xl font-black tracking-tight md:text-8xl">
-                  $300
-                </span>
-                <span className="pb-3 text-xl text-orange-500">/ mo</span>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {[
-                "Custom plan built for your business",
-                "Volume-based pricing",
-                "All core services included",
-                "Scales with your growth",
-                "No long-term contracts",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-orange-500 text-sm font-black text-orange-500">
-                    ✓
-                  </span>
-                  <p className="text-sm text-white/75 md:text-base">{item}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="md:col-span-2">
-              <a
-                href="#contact"
-                className="mx-auto mt-4 inline-flex w-full max-w-sm items-center justify-center rounded-full bg-orange-500 px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-black transition hover:bg-orange-400"
+          <div className="mt-6 space-y-3">
+            {plan.features.map((feature) => (
+              <div
+                key={feature}
+                className="flex items-center gap-3 text-sm text-white/65"
               >
-                Contact Us →
-              </a>
-            </div>
-          </div>
-
-          <div className="mx-auto mt-12 max-w-5xl">
-            <div className="mb-7 flex items-center gap-5">
-              <div className="h-px flex-1 bg-white/10" />
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-orange-500">
-                Core Services Included
-              </p>
-              <div className="h-px flex-1 bg-white/10" />
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
-                <div className="mb-5 flex h-18 w-18 items-center justify-center rounded-3xl border border-orange-500/40 bg-orange-500/10">
-                  <img
-                    src="/icons/package-receiving-transparent.png"
-                    alt="Package Receiving"
-                    className="h-10 w-10 object-contain"
-                  />
-                </div>
-                <h3 className="text-xl font-black">Full-Service Returns</h3>
-                <p className="mt-3 text-sm leading-7 text-white/60">
-                  Receiving, inspection, logging, reporting, short-term holding, and disposition handling.
-                </p>
+                <span className="text-orange-500">✓</span>
+                {feature}
               </div>
-
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-7 text-left">
-                <div className="mb-5 flex h-18 w-18 items-center justify-center rounded-3xl border border-orange-500/40 bg-orange-500/10">
-                  <img
-                    src="/icons/item-inspection-transparent.png"
-                    alt="Item Inspection"
-                    className="h-10 w-10 object-contain"
-                  />
-                </div>
-                <h3 className="text-xl font-black">Detailed Inspection</h3>
-                <p className="mt-3 text-sm leading-7 text-white/60">
-                  Condition notes, photo documentation, and return tracking when needed.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
-
-          <p className="mt-10 text-sm leading-7 text-white/60">
-            Have unique requirements or steady monthly return volume?{" "}
-            <a href="#contact" className="font-bold text-orange-500 hover:text-orange-400">
-              Contact us and we’ll build a plan that fits.
-            </a>
-          </p>
         </div>
-      </section>
+      ))}
+    </div>
+
+    <div className="mx-auto mt-10 max-w-4xl rounded-3xl border border-white/10 bg-black/30 p-6 text-center text-sm leading-7 text-white/60">
+      Additional returns may be billed based on monthly volume. Custom plans
+      are available for sellers with unique requirements or higher return
+      volumes.
+    </div>
+  </div>
+</section>
 
       {/* CONTACT */}
       <section id="contact" className="px-6 pb-24 pt-20 md:px-10">
