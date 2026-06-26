@@ -13,9 +13,40 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ReturnLab Logistics",
+  metadataBase: new URL("https://www.returnlablogistics.com"),
+  title: {
+    default: "ReturnLab Logistics",
+    template: "%s | ReturnLab Logistics",
+  },
   description:
-    "U.S.-based returns processing and reverse logistics for e-commerce sellers.",
+    "U.S.-based return receiving, inspection, documentation, and disposition support for independent cross-border e-commerce sellers.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "ReturnLab Logistics",
+    description:
+      "U.S.-based return receiving, inspection, documentation, and disposition support for independent cross-border e-commerce sellers.",
+    url: "/",
+    siteName: "ReturnLab Logistics",
+    images: [
+      {
+        url: "/returnlab-conveyor-hero.png",
+        width: 1600,
+        height: 900,
+        alt: "ReturnLab Logistics return processing facility hero image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ReturnLab Logistics",
+    description:
+      "U.S.-based return receiving, inspection, documentation, and disposition support for independent cross-border e-commerce sellers.",
+    images: ["/returnlab-conveyor-hero.png"],
+  },
 };
 
 export default function RootLayout({

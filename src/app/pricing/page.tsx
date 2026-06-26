@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function PricingPage() {
   const plans = [
     {
@@ -59,12 +61,12 @@ export default function PricingPage() {
     <main className="min-h-screen bg-white text-slate-900">
       <section className="border-b border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]">
         <div className="mx-auto max-w-6xl px-6 py-20 md:px-10">
-          <a
+          <Link
             href="/"
             className="mb-10 inline-flex text-sm font-medium text-orange-500 hover:text-orange-400"
           >
             ← Back to Home
-          </a>
+          </Link>
 
           <div className="text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-orange-500">
@@ -121,12 +123,12 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <a
+              <Link
                 href="/#contact"
                 className="mt-8 block rounded-full bg-orange-500 px-5 py-3 text-center font-medium text-white transition hover:bg-orange-400"
               >
                 {plan.cta}
-              </a>
+              </Link>
             </div>
           ))}
         </div>
@@ -175,12 +177,12 @@ export default function PricingPage() {
             processing needs.
           </p>
 
-          <a
+          <Link
             href="/#contact"
             className="mt-7 inline-flex rounded-full bg-orange-500 px-7 py-3 font-medium text-white transition hover:bg-orange-400"
           >
             Request a Quote
-          </a>
+          </Link>
         </div>
       </section>
     </main>

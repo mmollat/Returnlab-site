@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ThankYouPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#050505] px-6 py-24 text-white">
@@ -33,19 +35,19 @@ export default function ThankYouPage() {
         </p>
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center justify-center rounded-full bg-orange-500 px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-black transition hover:bg-orange-400"
           >
             Return Home
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/#services"
             className="inline-flex items-center justify-center rounded-full border border-white/15 px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:border-orange-500 hover:text-orange-400"
           >
             View Services
-          </a>
+          </Link>
         </div>
       </div>
     </main>

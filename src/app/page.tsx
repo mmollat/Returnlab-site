@@ -22,9 +22,18 @@ export default function Home() {
       <section className="relative overflow-hidden border-b border-white/10 bg-black">
         <img
           src="/returnlab-conveyor-hero.png"
-          alt="ReturnLab hero banner"
+          alt=""
           className="h-auto w-full"
         />
+
+        <div className="sr-only">
+          <p>U.S.-based returns and reverse logistics</p>
+          <h1>Return Processing Built For Global Brands</h1>
+          <p>
+            Intake. Inspection. Reporting. We handle your returns so you can
+            focus on growth.
+          </p>
+        </div>
 
         <div className="absolute inset-x-0 top-0 z-10 mx-auto max-w-7xl px-4 py-4 md:px-8 md:py-6">
           <div className="flex items-center justify-end gap-6 lg:gap-10">
@@ -140,18 +149,22 @@ export default function Home() {
               {
                 title: "Package Receiving",
                 icon: "/icons/package-receiving-transparent.png",
+                body: "Give customers a dependable U.S. return destination with organized intake, package tracking, and seller-specific handling instructions.",
               },
               {
                 title: "Returns Processing",
                 icon: "/icons/returns-processing-transparent.png",
+                body: "Move returns through a clean workflow for receiving, sorting, documenting, and preparing next-step actions.",
               },
               {
                 title: "Item Inspection",
                 icon: "/icons/item-inspection-transparent.png",
+                body: "Document item condition with practical notes so you can decide whether to restock, dispose, reship, or review the return.",
               },
               {
                 title: "Disposal Services",
                 icon: "/icons/disposal-services-transparent.png",
+                body: "Handle unwanted, damaged, or unsellable returns with coordinated disposition support based on your monthly workflow.",
               },
             ].map((item) => (
               <div key={item.title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
@@ -162,7 +175,7 @@ export default function Home() {
                 <h3 className="font-black">{item.title}</h3>
 
                 <p className="mt-3 text-sm leading-6 text-white/55">
-                  Boutique, hands-on support designed for independent e-commerce sellers who need dependable U.S.-based return handling.
+                  {item.body}
                 </p>
               </div>
             ))}
