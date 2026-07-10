@@ -27,11 +27,11 @@ export default function Home() {
         />
 
         <div className="sr-only">
-          <p>U.S.-based returns and reverse logistics</p>
-          <h1>Return Processing Built For Global Brands</h1>
+          <p>U.S.-based returns processing and reverse logistics support</p>
+          <h1>U.S. Processing Support Built For Global Brands</h1>
           <p>
-            Intake. Inspection. Reporting. We handle your returns so you can
-            focus on growth.
+            Receiving. Inspection. Storage. Reporting. We handle your U.S.
+            processing needs so you can focus on growth.
           </p>
         </div>
 
@@ -75,13 +75,13 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 max-w-md text-white/60">
-              Every return is received, inspected, documented, and reported through a clean operational workflow.
+              Returns are received, inspected, documented, and securely stored at our U.S. processing facility until further instructions are received.
             </p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              ["01", "Return Shipped", "Customers ship returns to our U.S. facility."],
+              ["01", "Package Shipped", "Customers or suppliers ship packages to our U.S. processing facility."],
               ["02", "Received & Inspected", "We inspect, categorize, and document each item."],
               ["03", "Logged & Reported", "Condition, notes, and action are recorded."],
             ].map(([num, title, body]) => (
@@ -110,16 +110,16 @@ export default function Home() {
 
           <div className="space-y-6 text-base leading-8 text-white/65">
             <p>
-              ReturnLab is designed for independent e-commerce sellers who need a reliable U.S.-based return address, package receiving, item inspection, documentation, and disposition support without the cost or complexity of a large commercial 3PL.
+              ReturnLab is designed for independent e-commerce sellers who need a reliable U.S. returns processing center for return receiving, supplier receiving, item inspection, inventory storage, documentation, and disposition support without the cost or complexity of a large commercial 3PL.
             </p>
 
             <p>
-              We are not a dock-based warehouse built for semi-truck volume or massive corporate networks. Our boutique operating model is intentionally lean, flexible, and hands-on — ideal for sellers who need personal communication, fast handling, and practical return support.
+              ReturnLab is a U.S. operations center purpose-built for boutique returns processing, not semi-truck volume or massive corporate networks. Our operating model is intentionally lean, flexible, and hands-on — ideal for sellers who need personal communication, fast handling, and practical return support.
             </p>
 
             <div className="grid gap-4 pt-2 md:grid-cols-2">
               {[
-                "Private U.S. return partner",
+                "Private U.S. operations partner",
                 "Ideal for cross-border sellers",
                 "Flexible monthly workflows",
                 "Direct communication",
@@ -141,30 +141,35 @@ export default function Home() {
           </p>
 
           <h2 className="mt-4 max-w-2xl text-4xl font-black uppercase leading-none md:text-5xl">
-            Personal Return Support Without 3PL Complexity
+            Flexible U.S. Processing Without 3PL Complexity
           </h2>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {[
               {
-                title: "Package Receiving",
+                title: "Return Processing",
                 icon: "/icons/package-receiving-transparent.png",
-                body: "Give customers a dependable U.S. return destination with organized intake, package tracking, and seller-specific handling instructions.",
+                body: "Give customers a dependable U.S. return destination with organized intake, logging, and seller-specific handling instructions.",
               },
               {
-                title: "Returns Processing",
-                icon: "/icons/returns-processing-transparent.png",
-                body: "Move returns through a clean workflow for receiving, sorting, documenting, and preparing next-step actions.",
-              },
-              {
-                title: "Item Inspection",
+                title: "Product Inspection",
                 icon: "/icons/item-inspection-transparent.png",
-                body: "Document item condition with practical notes so you can decide whether to restock, dispose, reship, or review the return.",
+                body: "Document product condition with practical notes so you can decide whether to store, dispose, reship, or review an item.",
               },
               {
-                title: "Disposal Services",
+                title: "Inventory Storage",
+                icon: "/icons/returns-processing-transparent.png",
+                body: "Securely store processed returns and received inventory at our U.S. processing facility until further instructions are received.",
+              },
+              {
+                title: "Supplier Receiving",
+                icon: "/icons/package-receiving-transparent.png",
+                body: "Receive inbound supplier shipments at our U.S. operations center with organized intake, documentation, and handling based on your instructions.",
+              },
+              {
+                title: "Reverse Logistics Support",
                 icon: "/icons/disposal-services-transparent.png",
-                body: "Handle unwanted, damaged, or unsellable returns with coordinated disposition support based on your monthly workflow.",
+                body: "Coordinate storage, disposal, resale preparation, or reshipping for returned and unwanted inventory based on your workflow.",
               },
             ].map((item) => (
               <div key={item.title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
@@ -198,8 +203,8 @@ export default function Home() {
     </h2>
 
     <p className="mx-auto mt-5 max-w-3xl text-white/60">
-      Simple, scalable return handling for international and cross-border
-      e-commerce sellers.
+      Simple, scalable returns processing and reverse logistics support for
+      international and cross-border e-commerce sellers.
     </p>
 
     <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -300,7 +305,7 @@ export default function Home() {
           </h2>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65">
-            Contact us to discuss your U.S.-based return receiving, inspection, documentation, disposal, or custom return handling needs.
+            Contact us to discuss return processing, product inspection, inventory storage, supplier receiving, or custom reverse logistics support at our U.S. processing facility.
           </p>
 
           <form ref={formRef} action="/api/contact" method="POST" className="mt-8 space-y-4">

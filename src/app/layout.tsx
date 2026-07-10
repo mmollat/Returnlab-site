@@ -19,14 +19,14 @@ export const metadata: Metadata = {
     template: "%s | ReturnLab Logistics",
   },
   description:
-    "U.S.-based return receiving, inspection, documentation, and disposition support for independent cross-border e-commerce sellers.",
+    "U.S.-based return processing, product inspection, inventory storage, supplier receiving, and reverse logistics support for cross-border sellers.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "ReturnLab Logistics",
     description:
-      "U.S.-based return receiving, inspection, documentation, and disposition support for independent cross-border e-commerce sellers.",
+      "U.S.-based return processing, product inspection, inventory storage, supplier receiving, and reverse logistics support for cross-border sellers.",
     url: "/",
     siteName: "ReturnLab Logistics",
     images: [
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ReturnLab Logistics",
     description:
-      "U.S.-based return receiving, inspection, documentation, and disposition support for independent cross-border e-commerce sellers.",
+      "U.S.-based return processing, product inspection, inventory storage, supplier receiving, and reverse logistics support for cross-border sellers.",
     images: ["/returnlab-conveyor-hero.png"],
   },
 };

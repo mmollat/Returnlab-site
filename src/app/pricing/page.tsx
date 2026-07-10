@@ -78,9 +78,9 @@ export default function PricingPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Built for international sellers who need a reliable U.S. return
-              address, package intake, tracking, storage, and return processing
-              partner.
+              Built for international sellers who need a reliable U.S. returns
+              processing center for package intake, tracking, inspection,
+              storage, and reverse logistics support.
             </p>
           </div>
         </div>
@@ -148,11 +148,12 @@ export default function PricingPage() {
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {[
               "Secure package receiving",
+              "Supplier receiving by arrangement",
               "Organized intake and tracking",
-              "Short-term storage",
-              "Inspection support",
+              "Inventory storage",
+              "Product inspection",
               "Disposal routing",
-              "Resale / liquidation support",
+              "Reverse logistics support",
             ].map((item) => (
               <div
                 key={item}
