@@ -1,51 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
-type RecentReturn = {
-  dateReceived?: string;
-  trackingNumber?: string;
-  carrier?: string;
-  itemSku?: string;
-  qty?: number;
-  actionTaken?: string;
-  status?: string;
-  notes?: string;
-};
-
-type ReportData = {
-  business?: string;
-  client?: string;
-  month?: string;
-  generatedAt?: string;
-  totalRows?: number;
-  totalReturns?: number;
-  kept?: number;
-  disposed?: number;
-  keepRate?: number;
-  disposedRate?: number;
-  totalTimeMinutes?: number;
-  avgMinutesPerReturn?: number;
-  estimatedResaleValue?: number;
-  baseFee?: number;
-  includedReturns?: number;
-  additionalReturns?: number;
-  additionalFees?: number;
-  totalDue?: number;
-  recentReturns?: RecentReturn[];
-};
-
-type ReportRow = {
-  id: string;
-  client_name: string;
-  report_month: string;
-  report_data: ReportData;
-  created_at: string;
-  updated_at: string;
-};
-
-const SUPABASE_URL = "https://vtrilxvdqnvnbzgpokpr.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_0bY7s0G4JPIxcVBXB2V0pA_7lDgnDR1";
+import type { ReportData, ReportRow } from "@/lib/returnlab-types";
 
 const DEFAULT_BASE_FEE = 800;
 const DEFAULT_INCLUDED_RETURNS = 0;
@@ -87,15 +43,7 @@ export default function ReportsPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch(
-          `${SUPABASE_URL}/rest/v1/returnlab_reports?select=*&order=report_month.desc`,
-          {
-            headers: {
-              apikey: SUPABASE_PUBLISHABLE_KEY,
-              Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-            },
-          }
-        );
+        const res = await fetch("/api/reports", { cache: "no-store" });
 
         if (!res.ok) {
           throw new Error(`Failed to load reports: ${res.status}`);

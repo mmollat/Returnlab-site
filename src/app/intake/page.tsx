@@ -53,26 +53,19 @@ export default function IntakePage() {
     setSuccess(false);
 
     try {
-      // REPLACE THIS WITH YOUR N8N WEBHOOK URL
-      const webhookUrl = "https://n8n.srv1556990.hstgr.cloud/webhook/returnlab-intake";
-
-      const payload = {
-        ...form,
-        month: form.dateReceived
-          ? form.dateReceived.slice(0, 7)
-          : "",
-      };
-
-      const res = await fetch(webhookUrl, {
+      const res = await fetch("/api/returns", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(form),
       });
 
       if (!res.ok) {
-        throw new Error("Failed to submit intake.");
+        const result = (await res.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(result?.error || "Failed to submit intake.");
       }
 
       setSuccess(true);
@@ -96,7 +89,7 @@ export default function IntakePage() {
       });
     } catch (err) {
       console.error(err);
-      alert("Failed to submit intake.");
+      alert(err instanceof Error ? err.message : "Failed to submit intake.");
     } finally {
       setLoading(false);
     }
