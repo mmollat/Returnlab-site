@@ -1,12 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import type { ReportData, ReportRow } from "@/lib/returnlab-types";
 
 const DEFAULT_BASE_FEE = 800;
-const DEFAULT_INCLUDED_RETURNS = 0;
+const DEFAULT_INCLUDED_RETURNS = 100;
 
 function emptyReportData(client: string, month: string): ReportData {
+  const isDgm = client === "DGM Group";
+  const clientBaseFee = isDgm ? 300 : DEFAULT_BASE_FEE;
+  const clientIncludedReturns = isDgm ? 50 : DEFAULT_INCLUDED_RETURNS;
+
   return {
     business: "ReturnLab Logistics",
     client,
@@ -21,11 +26,13 @@ function emptyReportData(client: string, month: string): ReportData {
     totalTimeMinutes: 0,
     avgMinutesPerReturn: 0,
     estimatedResaleValue: 0,
-    baseFee: DEFAULT_BASE_FEE,
-    includedReturns: DEFAULT_INCLUDED_RETURNS,
+    baseFee: clientBaseFee,
+    includedReturns: clientIncludedReturns,
     additionalReturns: 0,
     additionalFees: 0,
-    totalDue: DEFAULT_BASE_FEE,
+    outboundItems: 0,
+    outboundHandlingFees: 0,
+    totalDue: clientBaseFee,
     recentReturns: [],
   };
 }
@@ -238,6 +245,15 @@ export default function ReportsPage() {
               <Row label="Base Fee" value={`$${d.baseFee ?? 0}`} />
               <Row label="Included Returns" value={`${d.includedReturns ?? 0}`} />
               <Row label="Additional Returns" value={`${d.additionalReturns ?? 0}`} />
+              {reportClient === "DGM Group" && (
+                <>
+                  <Row label="Outbound Items" value={`${d.outboundItems ?? 0}`} />
+                  <Row
+                    label="Outbound Handling"
+                    value={`$${d.outboundHandlingFees ?? 0}`}
+                  />
+                </>
+              )}
               <Row label="Additional Fees" value={`$${d.additionalFees ?? 0}`} />
               <div className="border-t border-zinc-800 pt-4">
                 <Row label="Total Due" value={`$${d.totalDue ?? 0}`} strong />
@@ -260,7 +276,7 @@ export default function ReportsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px] text-left text-sm">
+              <table className="w-full min-w-[1120px] text-left text-sm">
                 <thead className="border-b border-zinc-800 text-zinc-500">
                   <tr>
                     <th className="px-6 py-4 font-medium">Date</th>
@@ -268,6 +284,8 @@ export default function ReportsPage() {
                     <th className="px-6 py-4 font-medium">Carrier</th>
                     <th className="px-6 py-4 font-medium">Qty</th>
                     <th className="px-6 py-4 font-medium">Action</th>
+                    <th className="px-6 py-4 font-medium">Inspection</th>
+                    <th className="px-6 py-4 font-medium">Photos</th>
                     <th className="px-6 py-4 font-medium">Notes</th>
                   </tr>
                 </thead>
@@ -304,7 +322,46 @@ export default function ReportsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-zinc-400">
-                          {item.notes || "—"}
+                          <p>{item.inspectionOutcome || "—"}</p>
+                          {item.outboundStatus && (
+                            <p className="mt-1 text-xs text-zinc-600">
+                              {item.outboundStatus}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          {item.photos?.length ? (
+                            <div className="flex -space-x-2">
+                              {item.photos.slice(0, 3).map((photo) => (
+                                <a
+                                  key={photo.id}
+                                  href={photo.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="relative block h-10 w-10 overflow-hidden rounded-lg border-2 border-zinc-950"
+                                  aria-label={`Open ${photo.category} photo`}
+                                >
+                                  <Image
+                                    src={photo.url}
+                                    alt={photo.category}
+                                    fill
+                                    sizes="40px"
+                                    className="object-cover"
+                                  />
+                                </a>
+                              ))}
+                              {item.photos.length > 3 && (
+                                <span className="grid h-10 w-10 place-items-center rounded-lg border-2 border-zinc-950 bg-zinc-800 text-xs text-zinc-300">
+                                  +{item.photos.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-zinc-600">—</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-zinc-400">
+                          {item.inspectionNotes || item.notes || "—"}
                         </td>
                       </tr>
                     );

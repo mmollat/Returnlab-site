@@ -16,6 +16,8 @@ while also supporting protected internal intake and monthly reporting pages.
 - Contact form powered by Resend
 - Thank-you confirmation page after contact submission
 - Protected return intake form for operational logging
+- Client-specific guided inspections for CTH and DGM Group
+- Private Supabase Storage photo documentation
 - Protected monthly reports dashboard
 - Direct Supabase-backed return logging and live report aggregation
 - Supabase-backed heartbeat endpoint for scheduled health updates
@@ -55,7 +57,6 @@ REPORTS_PASSWORD=your-basic-auth-password
 RETURNLAB_BASE_FEE=800
 RETURNLAB_INCLUDED_RETURNS=100
 RETURNLAB_OVERAGE_FEE=0
-RETURNLAB_SHEET_ID=your-google-sheet-id
 ```
 
 ## Run Locally
@@ -83,5 +84,6 @@ npm run lint
 - The intake form writes directly to the `returnlab_returns` Supabase table through a protected server route.
 - The reports page calculates live monthly results from the same returns table.
 - Apply the SQL migration in `supabase/migrations` before deploying these routes.
-- Run `npm run import:returns` once after the migration to copy the existing Google Sheets history into Supabase. The import is safe to rerun because each sheet row has a stable source key.
+- Google Sheets and n8n are not part of the live intake or reporting workflow.
+- `scripts/import-return-history.mjs` is retained only as a historical migration utility for the original Return Log.
 - Vercel runs `/api/heartbeat` daily from `vercel.json`.

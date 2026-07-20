@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hasValidBasicAuth } from "@/lib/basic-auth";
+import {
+  CLIENT_WORKFLOWS,
+  isClientName,
+  type ClientName,
+} from "@/lib/client-workflows";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import type { ReturnInput } from "@/lib/returnlab-types";
+import type {
+  InspectionOutcome,
+  OutboundStatus,
+  ReturnInput,
+} from "@/lib/returnlab-types";
 
 const allowedCarriers = new Set(["UPS", "FedEx", "USPS", "DHL", "Other"]);
 const allowedConditions = new Set([
@@ -27,6 +36,19 @@ const allowedStatuses = new Set([
   "On Hold",
   "Disposed",
   "Returned",
+]);
+const allowedInspectionOutcomes = new Set<InspectionOutcome>([
+  "Approved for resale",
+  "Client review required",
+  "Not approved",
+  "Unable to determine",
+]);
+const allowedOutboundStatuses = new Set<OutboundStatus>([
+  "Not requested",
+  "Awaiting client instructions",
+  "Awaiting prepaid label",
+  "Ready for carrier",
+  "Tendered to carrier",
 ]);
 
 function unauthorized() {
@@ -54,6 +76,10 @@ function isIsoDate(value: unknown): value is string {
   return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
+function optionalBoolean(value: unknown) {
+  return typeof value === "boolean" ? value : null;
+}
+
 export async function POST(request: NextRequest) {
   if (!hasValidBasicAuth(request)) return unauthorized();
 
@@ -69,7 +95,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (
-    !input.clientName?.trim() ||
+    !isClientName(input.clientName?.trim() ?? "") ||
     !isIsoDate(input.dateReceived) ||
     !allowedCarriers.has(input.carrier) ||
     !allowedConditions.has(input.condition) ||
@@ -78,6 +104,31 @@ export async function POST(request: NextRequest) {
   ) {
     return NextResponse.json(
       { ok: false, error: "One or more required fields are invalid." },
+      { status: 400 }
+    );
+  }
+
+
+  const clientName = input.clientName.trim() as ClientName;
+  const workflow = CLIENT_WORKFLOWS[clientName];
+  const inspectionOutcome = input.inspectionOutcome || null;
+  const outboundStatus = input.outboundStatus || null;
+  const findings = input.inspectionFindings ?? {};
+  const allowedFindingKeys = new Set(workflow.questions.map((item) => item.key));
+
+  if (
+    (inspectionOutcome !== null &&
+      !allowedInspectionOutcomes.has(inspectionOutcome)) ||
+    (outboundStatus !== null && !allowedOutboundStatuses.has(outboundStatus)) ||
+    Object.entries(findings).some(
+      ([key, value]) =>
+        !allowedFindingKeys.has(key) || typeof value !== "boolean"
+    ) ||
+    (clientName === "DGM Group" &&
+      (!optionalText(input.inspectorName) || inspectionOutcome === null))
+  ) {
+    return NextResponse.json(
+      { ok: false, error: "Inspection details are invalid or incomplete." },
       { status: 400 }
     );
   }
@@ -104,7 +155,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from("returnlab_returns")
       .insert({
-        client_name: input.clientName.trim(),
+        client_name: clientName,
         date_received: input.dateReceived,
         tracking_number: optionalText(input.trackingNumber),
         carrier: input.carrier,
@@ -119,6 +170,22 @@ export async function POST(request: NextRequest) {
         storage_until: optionalText(input.storageUntil),
         photo_link: optionalText(input.photoLink),
         notes: optionalText(input.notes),
+        inspector_name: optionalText(input.inspectorName),
+        inspected_at:
+          inspectionOutcome || optionalText(input.inspectorName)
+            ? new Date().toISOString()
+            : null,
+        inspection_outcome: inspectionOutcome,
+        inspection_findings: findings,
+        inspection_notes: optionalText(input.inspectionNotes),
+        repackaged: optionalBoolean(input.repackaged),
+        replacement_poly_bag_used: optionalBoolean(
+          input.replacementPolyBagUsed
+        ),
+        outbound_label_received: optionalBoolean(
+          input.outboundLabelReceived
+        ),
+        outbound_status: outboundStatus,
       })
       .select("id")
       .single();
