@@ -15,8 +15,43 @@ export type ReturnRecord = {
   storage_until: string | null;
   photo_link: string | null;
   notes: string | null;
+  inspector_name: string | null;
+  inspected_at: string | null;
+  inspection_outcome: InspectionOutcome | null;
+  inspection_findings: Record<string, boolean>;
+  inspection_notes: string | null;
+  repackaged: boolean | null;
+  replacement_poly_bag_used: boolean | null;
+  outbound_label_received: boolean | null;
+  outbound_status: OutboundStatus | null;
+  returnlab_return_photos?: ReturnPhotoRecord[];
   created_at: string;
   updated_at: string;
+};
+
+export type InspectionOutcome =
+  | "Approved for resale"
+  | "Client review required"
+  | "Not approved"
+  | "Unable to determine";
+
+export type OutboundStatus =
+  | "Not requested"
+  | "Awaiting client instructions"
+  | "Awaiting prepaid label"
+  | "Ready for carrier"
+  | "Tendered to carrier";
+
+export type ReturnPhotoRecord = {
+  id: number;
+  return_id: number;
+  storage_path: string;
+  photo_category: string;
+  original_filename: string | null;
+  content_type: string;
+  size_bytes: number;
+  created_at: string;
+  signed_url?: string;
 };
 
 export type ReturnInput = {
@@ -35,9 +70,18 @@ export type ReturnInput = {
   storageUntil?: string;
   photoLink?: string;
   notes?: string;
+  inspectorName?: string;
+  inspectionOutcome?: InspectionOutcome | "";
+  inspectionFindings?: Record<string, boolean>;
+  inspectionNotes?: string;
+  repackaged?: boolean | null;
+  replacementPolyBagUsed?: boolean | null;
+  outboundLabelReceived?: boolean | null;
+  outboundStatus?: OutboundStatus | "";
 };
 
 export type RecentReturn = {
+  id?: number;
   dateReceived?: string;
   trackingNumber?: string;
   carrier?: string;
@@ -46,6 +90,16 @@ export type RecentReturn = {
   actionTaken?: string;
   status?: string;
   notes?: string;
+  inspectionOutcome?: InspectionOutcome;
+  inspectionFindings?: Record<string, boolean>;
+  inspectionNotes?: string;
+  inspectorName?: string;
+  outboundStatus?: OutboundStatus;
+  photos?: Array<{
+    id: number;
+    category: string;
+    url: string;
+  }>;
 };
 
 export type ReportData = {
@@ -66,6 +120,8 @@ export type ReportData = {
   includedReturns?: number;
   additionalReturns?: number;
   additionalFees?: number;
+  outboundItems?: number;
+  outboundHandlingFees?: number;
   totalDue?: number;
   recentReturns?: RecentReturn[];
 };

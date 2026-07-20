@@ -6,6 +6,25 @@ import type { ReportData, ReportRow, ReturnRecord } from "@/lib/returnlab-types"
 const baseFee = Number(process.env.RETURNLAB_BASE_FEE ?? 800);
 const includedReturns = Number(process.env.RETURNLAB_INCLUDED_RETURNS ?? 100);
 const overageFee = Number(process.env.RETURNLAB_OVERAGE_FEE ?? 0);
+const inspectionPhotoBucket = "return-inspections";
+
+function pricingFor(client: string) {
+  if (client === "DGM Group") {
+    return {
+      baseFee: 300,
+      includedReturns: 50,
+      overageFee: 0,
+      outboundItemFee: 5,
+    };
+  }
+
+  return {
+    baseFee,
+    includedReturns,
+    overageFee,
+    outboundItemFee: 0,
+  };
+}
 
 function unauthorized() {
   return NextResponse.json(
@@ -43,6 +62,7 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
         item.action_taken.toLowerCase().includes("dispose")
       ).length;
       const totalReturns = items.length;
+      const pricing = pricingFor(client);
       const totalTimeMinutes = items.reduce(
         (total, item) => total + (item.time_spent_minutes ?? 0),
         0
@@ -51,8 +71,19 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
         (total, item) => total + Number(item.estimated_resale_value ?? 0),
         0
       );
-      const additionalReturns = Math.max(0, totalReturns - includedReturns);
-      const additionalFees = additionalReturns * overageFee;
+      const additionalReturns = Math.max(
+        0,
+        totalReturns - pricing.includedReturns
+      );
+      const outboundItems = items.reduce(
+        (total, item) =>
+          total +
+          (item.outbound_status === "Tendered to carrier" ? item.qty : 0),
+        0
+      );
+      const outboundHandlingFees = outboundItems * pricing.outboundItemFee;
+      const additionalFees =
+        additionalReturns * pricing.overageFee + outboundHandlingFees;
       const newestTimestamp = items.reduce(
         (latest, item) => (item.updated_at > latest ? item.updated_at : latest),
         items[0].updated_at
@@ -81,12 +112,15 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
           ? round(totalTimeMinutes / totalReturns, 1)
           : 0,
         estimatedResaleValue: round(estimatedResaleValue),
-        baseFee,
-        includedReturns,
+        baseFee: pricing.baseFee,
+        includedReturns: pricing.includedReturns,
         additionalReturns,
         additionalFees: round(additionalFees),
-        totalDue: round(baseFee + additionalFees),
+        outboundItems,
+        outboundHandlingFees: round(outboundHandlingFees),
+        totalDue: round(pricing.baseFee + additionalFees),
         recentReturns: items.slice(0, 50).map((item) => ({
+          id: item.id,
           dateReceived: item.date_received,
           trackingNumber: item.tracking_number ?? undefined,
           carrier: item.carrier,
@@ -95,6 +129,18 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
           actionTaken: item.action_taken,
           status: item.status,
           notes: item.notes ?? undefined,
+          inspectionOutcome: item.inspection_outcome ?? undefined,
+          inspectionFindings: item.inspection_findings,
+          inspectionNotes: item.inspection_notes ?? undefined,
+          inspectorName: item.inspector_name ?? undefined,
+          outboundStatus: item.outbound_status ?? undefined,
+          photos: (item.returnlab_return_photos ?? [])
+            .filter((photo) => photo.signed_url)
+            .map((photo) => ({
+              id: photo.id,
+              category: photo.photo_category,
+              url: photo.signed_url ?? "",
+            })),
         })),
       };
 
@@ -117,13 +163,29 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from("returnlab_returns")
-      .select("*")
+      .select("*, returnlab_return_photos(*)")
       .order("date_received", { ascending: false })
       .order("id", { ascending: false });
 
     if (error) throw error;
 
-    return NextResponse.json(buildReports((data ?? []) as ReturnRecord[]), {
+    const returns = (data ?? []) as ReturnRecord[];
+    const returnsWithPhotoUrls = await Promise.all(
+      returns.map(async (item) => ({
+        ...item,
+        returnlab_return_photos: await Promise.all(
+          (item.returnlab_return_photos ?? []).map(async (photo) => {
+            const { data: signed } = await supabase.storage
+              .from(inspectionPhotoBucket)
+              .createSignedUrl(photo.storage_path, 60 * 15);
+
+            return { ...photo, signed_url: signed?.signedUrl };
+          })
+        ),
+      }))
+    );
+
+    return NextResponse.json(buildReports(returnsWithPhotoUrls), {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
