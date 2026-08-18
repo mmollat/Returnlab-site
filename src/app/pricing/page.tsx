@@ -23,7 +23,7 @@ export default function PricingPage() {
       features: [
         "Everything in Starter",
         "14-day storage",
-        "Basic resale sorting",
+        "Condition-based sorting",
         "Monthly summary report",
       ],
       cta: "Get Started",
@@ -50,7 +50,7 @@ export default function PricingPage() {
       features: [
         "Dedicated handling",
         "Extended storage",
-        "Bulk resale coordination",
+        "Bulk disposition coordination",
         "Direct support",
       ],
       cta: "Request Quote",

@@ -154,7 +154,7 @@ export default function Home() {
               {
                 title: "Product Inspection",
                 icon: "/icons/item-inspection-transparent.png",
-                body: "Document product condition with practical notes so you can decide whether to store, dispose, reship, or review an item.",
+                body: "Document product condition with practical notes so you can decide whether to store, dispose, or review an item.",
               },
               {
                 title: "Inventory Storage",
@@ -169,7 +169,7 @@ export default function Home() {
               {
                 title: "Reverse Logistics Support",
                 icon: "/icons/disposal-services-transparent.png",
-                body: "Coordinate storage, disposal, resale preparation, or reshipping for returned and unwanted inventory based on your workflow.",
+                body: "Coordinate storage and disposal for returned and unwanted inventory based on your instructions.",
               },
             ].map((item) => (
               <div key={item.title} className="rounded-3xl border border-white/10 bg-white/[0.035] p-6">
