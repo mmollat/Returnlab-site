@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import StaffHeader from "@/components/staff-header";
+import IntakeDateInput from "@/components/intake-date-input";
 import { useMemo, useState } from "react";
 import {
   ACTIVE_LEGACY_CLIENTS,
@@ -301,8 +302,7 @@ export default function IntakePage() {
                   </select>
                 </Field>
                 <Field label="Date received" required>
-                  <input
-                    type="date"
+                  <IntakeDateInput
                     value={form.dateReceived}
                     onChange={(event) => updateField("dateReceived", event.target.value)}
                     className={inputClass}
