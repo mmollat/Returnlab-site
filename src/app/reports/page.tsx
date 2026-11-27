@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import StaffHeader from "@/components/staff-header";
 import { useEffect, useMemo, useState } from "react";
 import type { ReportData, ReportRow } from "@/lib/returnlab-types";
 
@@ -115,7 +116,8 @@ export default function ReportsPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-black p-8 text-white">
-        <p className="text-zinc-400">Loading report...</p>
+        <StaffHeader title="Monthly Return Report"><Link href="/intake" className="text-sm text-emerald-300">Staff intake</Link></StaffHeader>
+        <p className="mt-4 text-zinc-400">Loading report...</p>
       </main>
     );
   }
@@ -123,7 +125,7 @@ export default function ReportsPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-black p-8 text-white">
-        <h1 className="text-2xl font-semibold">ReturnLab Reports</h1>
+        <StaffHeader title="Monthly Return Report"><Link href="/intake" className="text-sm text-emerald-300">Staff intake</Link></StaffHeader>
         <p className="mt-4 text-red-400">{error}</p>
       </main>
     );
@@ -132,49 +134,38 @@ export default function ReportsPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <header className="mb-10 flex flex-col gap-6 border-b border-zinc-800 pb-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="mb-2 text-sm uppercase tracking-[0.35em] text-zinc-500">
-              ReturnLab Logistics
-            </p>
-            <Link href="/intake" className="mb-3 inline-block text-sm text-emerald-300">Open staff intake</Link>
-            <h1 className="text-4xl font-semibold tracking-tight">
-              Monthly Return Report
-            </h1>
-            <p className="mt-2 text-zinc-400">
-              {reportClient} · {reportMonth}
-            </p>
-            <p className="mt-2 text-sm text-zinc-600">
-              {generatedAt}
-            </p>
-          </div>
+        <div className="mb-8">
+          <StaffHeader title="Monthly Return Report" subtitle={<>{reportClient} · {reportMonth}<p className="mt-1 text-zinc-500">{generatedAt}</p></>}>
+            <div className="flex flex-col gap-3">
+              <Link href="/intake" className="text-sm text-emerald-300 md:self-end">Staff intake</Link>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <select
+                  value={selectedClient}
+                  onChange={(e) => setSelectedClient(e.target.value)}
+                  className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm text-white outline-none"
+                >
+                  {clients.map((client) => (
+                    <option key={client} value={client}>
+                      {client}
+                    </option>
+                  ))}
+                </select>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <select
-              value={selectedClient}
-              onChange={(e) => setSelectedClient(e.target.value)}
-              className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm text-white outline-none"
-            >
-              {clients.map((client) => (
-                <option key={client} value={client}>
-                  {client}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm text-white outline-none"
-            >
-              {months.map((month) => (
-                <option key={month} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
-          </div>
-        </header>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm text-white outline-none"
+                >
+                  {months.map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </StaffHeader>
+        </div>
 
         {!report && (
           <div className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 text-sm text-zinc-400">

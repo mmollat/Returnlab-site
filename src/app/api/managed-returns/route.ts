@@ -1,10 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { hasValidBasicAuth } from "@/lib/basic-auth";
 import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, field, isUuid, isoDate, portalEmail, storageThrough } from "@/lib/managed-returns";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,included_storage_days,portal_enabled,active";
-const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,storage_until,status,observed_condition,inspection_outcome,client_summary,inspected_at,returnlab_client_instructions(instruction,submitted_at)";
+const returnFields = "id,client_id,merchant_return_id,item_sku,tracking_number,date_received,storage_until,status,observed_condition,inspection_outcome,client_summary,inspection_notes,time_spent_minutes,inspected_at,returnlab_client_instructions(instruction,submitted_at)";
 function response(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
     const company = result.data;
     if (!company) return response({error:"Active company not found."},404);
     if (action === "grantAccess" || action === "revokeAccess") {
-      if (!company.portal_enabled) return bad("This company is staff-only; client portal access is disabled.");
+      if (company.name === "CTH" || !company.portal_enabled) return bad("This company is staff-only; client portal access is disabled.");
       const email = portalEmail(input.email);
       if (!email) return bad("Enter a valid email.");
       let result;
@@ -108,23 +109,39 @@ export async function POST(req: NextRequest) {
       if (error) throw error;
       return response({ok:true});
     }
-    if (company.name === "CTH") return bad("Use the CTH intake workflow to preserve its existing processing rules.");
+    const isCth = company.name === "CTH";
     if (action === "arrival") {
       const merchantId = field(input.merchantReturnId,100);
       const sku = field(input.sku,120);
+      const tracking = field(input.tracking,150);
       const date = field(input.received,10);
       const carrier = CARRIERS.find(x=>x===input.carrier);
       const qty = input.qty;
-      if (!merchantId || !sku || !isoDate(date) || !carrier || typeof qty !== "number" || !Number.isSafeInteger(qty) || qty<1 || qty>10000) return bad("Enter a return ID, SKU, valid received date, carrier and quantity.");
+      if (!isoDate(date) || !carrier || typeof qty !== "number" || !Number.isSafeInteger(qty) || qty<1 || qty>10000) return bad("Enter a valid received date, carrier and quantity.");
+      if (!isCth && (!merchantId || !sku)) return bad("Enter a merchant return ID and SKU.");
+      if (isCth && typeof input.tracking === "string" && input.tracking.trim() && !tracking) return bad("Tracking number must be 150 characters or less.");
       const {data,error} = await db.from("returnlab_returns").insert({
-        client_id:clientId, client_name:company.name, merchant_return_id:merchantId, item_sku:sku, date_received:date,
-        managed_tracking_number:field(input.tracking,150)||null, storage_until:storageThrough(date,company.included_storage_days as number), carrier, qty, condition:"Unknown", status:"Received", action_taken:"Hold for review",
+        client_id:clientId, client_name:company.name, merchant_return_id:isCth ? `CTH-${randomUUID().toUpperCase()}` : merchantId, item_sku:sku||null, date_received:date,
+        managed_tracking_number:isCth ? null : tracking||null, storage_until:isCth ? null : storageThrough(date,company.included_storage_days as number),
+        ...(isCth ? {tracking_number:tracking||null,return_reason:field(input.returnReason,1000)||null} : {}),
+        carrier, qty, condition:"Unknown", status:"Received", action_taken:"Hold for review",
       }).select(returnFields).single();
-      if (error?.code === "23505") return response({error:"This return ID, SKU and tracking combination has already been logged."},409);
+      if (error?.code === "23505") return response({error:isCth ? "This CTH tracking number has already been logged. Check recent returns or staff reports." : "This return ID, SKU and tracking combination has already been logged."},409);
       if (error) throw error;
       return response({entry:data},201);
     }
+    if (action === "completeCthDisposal") {
+      if (!isCth) return bad("Only CTH uses staff-only disposal.");
+      const id=input.id;
+      if(typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || input.confirmCompleted!==true) return bad("Confirm that this return has already been physically disposed of.");
+      const {data,error}=await db.from("returnlab_returns").update({status:"Disposed",action_taken:"Dispose"})
+        .eq("client_id",clientId).eq("id",id).eq("status","Processing").not("inspected_at","is",null).select(returnFields).maybeSingle();
+      if(error) throw error;
+      if(!data) return response({error:"This CTH return must be inspected and awaiting disposal."},409);
+      return response({entry:data});
+    }
     if (action === "completeInstruction") {
+      if (isCth) return bad("Use staff-only disposal for CTH.");
       const id=input.id;
       if(typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || input.confirmCompleted!==true) return bad("Confirm that the physical action is complete.");
       const {data:instruction,error:instructionError}=await db.from("returnlab_client_instructions").select("instruction").eq("client_id",clientId).eq("return_id",id).maybeSingle();
@@ -144,14 +161,19 @@ export async function POST(req: NextRequest) {
       const summary = field(input.summary,3000);
       const findings = input.findings as Record<string, unknown>;
       const checklist: string[] = Array.isArray(company.checklist) ? company.checklist : [];
-      if (typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || !condition || !summary ||
+      if (typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || !condition || (!isCth && !summary) ||
         !findings || typeof findings!=="object" || Array.isArray(findings) ||
-        Object.keys(findings).length!==checklist.length || !checklist.every((_,i)=>typeof findings[`check_${i}`]==="boolean")) return bad("Complete every checklist item and enter a customer-visible summary.");
+        Object.keys(findings).length!==checklist.length || !checklist.every((_,i)=>typeof findings[`check_${i}`]==="boolean")) return bad(isCth ? "Choose a condition and complete all inspection checks." : "Complete every checklist item and enter a customer-visible summary.");
       if ("outcome" in input) return bad("Record observations only. The client decides the disposition.");
-      const {data,error} = await db.from("returnlab_returns").update({
+      const minutes=input.minutes;
+      if (isCth && minutes!=null && (typeof minutes!=="number" || !Number.isSafeInteger(minutes) || minutes<0 || minutes>100000)) return bad("Enter valid whole minutes.");
+      const {data,error} = await db.from("returnlab_returns").update(isCth ? {
+        observed_condition:condition, inspection_findings:findings, inspection_notes:summary||null,
+        inspected_at:new Date().toISOString(), time_spent_minutes:minutes??null, status:"Processing", action_taken:"Hold for review",
+      } : {
         observed_condition:condition, inspection_outcome:"Client review required", inspection_findings:findings, client_summary:summary, inspected_at:new Date().toISOString(),
         status:"On Hold", action_taken:"Hold for review",
-      }).eq("client_id",clientId).eq("id",id).in("status",["Received","Processing","Completed","On Hold"]).select(returnFields).maybeSingle();
+      }).eq("client_id",clientId).eq("id",id).in("status",isCth ? ["Received","Processing"] : ["Received","Processing","Completed","On Hold"]).select(returnFields).maybeSingle();
       if (error) throw error;
       if (!data) return response({error:"Editable return not found in this company."},404);
       return response({entry:data});
