@@ -68,13 +68,14 @@ try{
  const form={action:"arrival",clientId:a.id,merchantReturnId:"MB-100",sku:"BACKGAMMON",received:"2026-11-27",carrier:"UPS",qty:1};
  const row=(await json(await rest(form),201)).entry;
  assert.equal(row.status,"Received");assert.equal(row.action_taken,"Hold for review");
- const inspection={action:"inspection",clientId:a.id,id:row.id,condition:"Like New",summary:"Complete set.",findings:{check_0:true,check_1:true}};
+ const inspection={action:"inspection",clientId:a.id,id:row.id,condition:"No visible issues",summary:"Complete set.",findings:{check_0:true,check_1:true}};
  await json(await rest({...inspection,clientId:b.id,findings:{check_0:true,check_1:true}}),404);
  await json(await rest({...inspection,outcome:"Approved for resale"}),400);
  inspection.findings.check_1=false;
  const inspected=(await json(await rest(inspection),200)).entry;
  assert.ok(inspected.inspected_at);
  assert.equal(inspected.status,"On Hold");
+ assert.equal(inspected.condition,"No visible issues");
  assert.equal(inspected.inspection_outcome,"Client review required");
  assert.equal(entries[0].action_taken,"Hold for review");
  assert.equal(inspected.client_summary,"Complete set.");

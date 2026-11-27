@@ -34,6 +34,16 @@ alter table public.returnlab_returns
   add constraint returnlab_managed_return_fields_check check (
     client_id is null or (merchant_return_id is not null and length(btrim(merchant_return_id)) between 1 and 100)
   );
+-- Keep legacy condition grades and new factual observations separate.
+alter table public.returnlab_returns
+  drop constraint returnlab_returns_condition_check,
+  add constraint returnlab_returns_condition_check check (
+    (client_id is null and condition in ('New', 'New (unopened)', 'Like New', 'Used', 'Damaged', 'Defective', 'Unknown'))
+    or (client_id is not null and (
+      (inspected_at is null and condition = 'Unknown')
+      or (inspected_at is not null and condition in ('Sealed / not opened', 'No visible issues', 'Wear or damage observed', 'Unable to verify'))
+    ))
+  );
 create index returnlab_returns_client_arrival_idx on public.returnlab_returns(client_id,date_received desc,id desc) where client_id is not null;
 -- Preserve the legacy tracking constraint for existing workflows.
 drop index public.returnlab_returns_tracking_client_unique_idx;

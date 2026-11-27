@@ -1,6 +1,6 @@
 export const DEFAULT_CHECKLIST = ["Original packaging checked", "Accessories checked"];
 export const CARRIERS = ["UPS", "FedEx", "USPS", "DHL", "Other"] as const;
-export const CONDITIONS = ["New", "New (unopened)", "Like New", "Used", "Damaged", "Defective", "Unknown"] as const;
+export const CONDITIONS = ["Sealed / not opened", "No visible issues", "Wear or damage observed", "Unable to verify"] as const;
 
 export function field(value: unknown, max: number): string {
   if (typeof value !== "string" || value.trim().length > max) return "";

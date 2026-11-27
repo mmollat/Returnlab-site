@@ -109,7 +109,7 @@ export default function ClientWorkspaces(){
       });}}>
         <h2 className="text-xl font-semibold">Inspect {selected.merchant_return_id}</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <label>Condition<select name="condition" className={input} defaultValue={selected.condition} required>{CONDITIONS.map(c=><option key={c}>{c}</option>)}</select></label>
+          <label>Condition<select name="condition" className={input} defaultValue={CONDITIONS.find(x=>x===selected.condition)??""} required><option value="" disabled>Choose an observation</option>{CONDITIONS.map(c=><option key={c}>{c}</option>)}</select></label>
           <p className="self-end text-sm text-zinc-400">Publishing shares the findings and leaves the item on hold for the client’s decision.</p>
         </div>
         <fieldset className="space-y-2"><legend>Checklist</legend>{company.checklist.map((check,i)=><label key={check} className="flex flex-wrap items-center justify-between gap-2">{check}<select name={`check_${i}`} required defaultValue="" className="rounded border border-zinc-700 bg-zinc-900 p-1"><option value="" disabled>Choose</option><option value="yes">Verified / no issue</option><option value="no">Issue / unverified</option></select></label>)}</fieldset>
