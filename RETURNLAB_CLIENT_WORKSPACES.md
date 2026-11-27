@@ -1,6 +1,6 @@
 # Client workspaces and portal
 
-This release adds an internal client setup and intake page at `/intake` and a separate MB Heritage customer login at `/portal`. CTH uses the new staff-only `/intake` workflow: log arrival, then record disposal after it physically happens. Staff inspection and private photos are optional. New CTH entries and historical rows remain in the same staff reports; `/intake/legacy` remains a CTH fallback. DGM Group is retired from intake and only appears in reports if historical entries exist. No CTH portal access is provisioned or allowed. Do not share the staff credentials with a client.
+This release adds an internal client setup and intake page at `/intake` and a separate MB Heritage customer login at `/portal`. CTH uses the new staff-only `/intake` workflow: log arrival, then record disposal after it physically happens. Staff inspection and private photos are optional. New CTH entries and historical rows remain in the same staff reports; old `/intake/legacy` bookmarks redirect to the unified staff intake. DGM Group is retired from intake and only appears in reports if historical entries exist. No CTH portal access is provisioned or allowed. Do not share the staff credentials with a client.
 
 ## Before deployment
 

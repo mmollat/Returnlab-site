@@ -69,7 +69,6 @@ export default function ClientWorkspaces(){
     <StaffHeader title="Return Intake" subtitle="Log arrivals, inspect returns, and manage client access.">
       <nav aria-label="Staff navigation" className="flex flex-wrap gap-4">
         <Link href="/reports" className="text-sm text-emerald-300">Staff reports</Link>
-        <Link href="/intake/legacy" className="text-sm text-zinc-300">Legacy intake</Link>
       </nav>
     </StaffHeader>
     {message&&<p role="status" className="rounded-xl border border-zinc-700 bg-zinc-900 p-3">{message}</p>}

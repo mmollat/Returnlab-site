@@ -67,15 +67,15 @@ try{
  assert.match((await json(retired,410)).error,/no longer accepting returns/);
  assert.equal((await fetch(origin+"/intake/clients")).status,401);
  const html=await fetch(origin+"/intake",{headers:{authorization}});
- assert.equal(html.status,200);assert.match(await html.text(),/returnlab-staff-logo\.png/);
+ assert.equal(html.status,200);const intakeHtml=await html.text();assert.match(intakeHtml,/returnlab-staff-logo\.png/);assert.doesNotMatch(intakeHtml,/href="\/intake\/legacy"|>Legacy intake</);
  assert.equal((await fetch(origin+"/returnlab-staff-logo.png")).status,200);
- for(const path of ["/reports","/intake/legacy"]){
-   const page=await fetch(origin+path,{headers:{authorization}});
-   assert.equal(page.status,200);
-   const markup=await page.text();
-   assert.match(markup,/returnlab-staff-logo\.png/);
-   assert.doesNotMatch(markup,/<option[^>]*>DGM Group<\/option>/);
- }
+ const reportPage=await fetch(origin+"/reports",{headers:{authorization}});
+ assert.equal(reportPage.status,200);
+ assert.match(await reportPage.text(),/returnlab-staff-logo\.png/);
+ const legacy=await fetch(origin+"/intake/legacy",{headers:{authorization},redirect:"manual"});
+ assert.equal(legacy.status,307);
+ assert.equal(legacy.headers.get("location"),"/intake");
+ assert.equal((await fetch(origin+"/intake/legacy",{redirect:"manual"})).status,401);
  await json(await rest({action:"createCompany",name:"No"}, ""),401);
  await json(await rest({action:"createCompany",name:"Cross origin"},authorization,"","https://other.example"),403);
  const a=(await json(await rest({action:"createCompany",name:"Fixture A",checklist:"Condition\nAccessories",monthlyFee:320,includedReturns:45,overageFee:5}),201)).company;
