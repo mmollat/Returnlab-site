@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, OUTCOMES } from "@/lib/managed-returns";
+import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST } from "@/lib/managed-returns";
 import { PHOTO_CATEGORIES } from "@/lib/client-workflows";
 
 type Company={id:string; name:string; checklist:string[]; active:boolean};
@@ -95,11 +95,11 @@ export default function ClientWorkspaces(){
       </div>
       <section className={card}>
         <h2 className="text-xl font-semibold">Recent returns</h2>
-        {!entries.length?<p className="text-zinc-400">No returns logged yet.</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=><li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><div><strong>{row.merchant_return_id}</strong> · {row.item_sku}<p className="text-sm text-zinc-400">{row.date_received} · {row.inspection_outcome??"Pending inspection"}</p></div>{["Received","Processing","Completed","On Hold"].includes(row.status)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setSelected(row);}}>Inspect</button>}</li>)}</ul>}
+        {!entries.length?<p className="text-zinc-400">No returns logged yet.</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=><li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><div><strong>{row.merchant_return_id}</strong> · {row.item_sku}<p className="text-sm text-zinc-400">{row.date_received} · {row.inspected_at?"Findings posted · Awaiting client decision":"Pending inspection"}</p></div>{["Received","Processing","Completed","On Hold"].includes(row.status)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setSelected(row);}}>Inspect</button>}</li>)}</ul>}
       </section>
       {selected&&<form key={selected.id} className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el),row=selected;void perform(async()=>{
         const findings=Object.fromEntries(company.checklist.map((_,i)=>[`check_${i}`,f.get(`check_${i}`)==="yes"]));
-        if (!photoRetry) await request("",{action:"inspection",clientId,id:row.id,condition:f.get("condition"),outcome:f.get("outcome"),summary:f.get("summary"),findings});
+        if (!photoRetry) await request("",{action:"inspection",clientId,id:row.id,condition:f.get("condition"),summary:f.get("summary"),findings});
         const photos=f.get("photo"); if(photos instanceof File&&photos.size){
           const payload=new FormData();payload.set("file",photos);payload.set("returnId",String(row.id));payload.set("category",String(f.get("category")));
           const upload=await fetch("/api/returns/photos",{method:"POST",body:payload}).catch(()=>null);
@@ -110,9 +110,9 @@ export default function ClientWorkspaces(){
         <h2 className="text-xl font-semibold">Inspect {selected.merchant_return_id}</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <label>Condition<select name="condition" className={input} defaultValue={selected.condition} required>{CONDITIONS.map(c=><option key={c}>{c}</option>)}</select></label>
-          <label>Outcome<select name="outcome" className={input} defaultValue={selected.inspection_outcome??""} required><option value="" disabled>Choose an outcome</option>{OUTCOMES.map(c=><option key={c}>{c}</option>)}</select></label>
+          <p className="self-end text-sm text-zinc-400">Publishing shares the findings and leaves the item on hold for the client’s decision.</p>
         </div>
-        <fieldset className="space-y-2"><legend>Checklist</legend>{company.checklist.map((check,i)=><label key={check} className="flex flex-wrap items-center justify-between gap-2">{check}<select name={`check_${i}`} required defaultValue="" className="rounded border border-zinc-700 bg-zinc-900 p-1"><option value="" disabled>Choose</option><option value="yes">Pass</option><option value="no">Issue / unverified</option></select></label>)}</fieldset>
+        <fieldset className="space-y-2"><legend>Checklist</legend>{company.checklist.map((check,i)=><label key={check} className="flex flex-wrap items-center justify-between gap-2">{check}<select name={`check_${i}`} required defaultValue="" className="rounded border border-zinc-700 bg-zinc-900 p-1"><option value="" disabled>Choose</option><option value="yes">Verified / no issue</option><option value="no">Issue / unverified</option></select></label>)}</fieldset>
         <label className="block">Client-visible findings<textarea name="summary" className={input} required rows={3} maxLength={3000} defaultValue={selected.client_summary??""} placeholder="What the client needs to decide the refund. Do not include internal notes or personal information."/></label>
         <div className="grid gap-3 md:grid-cols-2"><label>Optional client-visible photo<input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className={input}/></label><label>Photo category<select name="category" className={input} defaultValue="Issue close-up">{PHOTO_CATEGORIES.map(x=><option key={x}>{x}</option>)}</select></label></div>
         <button className={button} disabled={busy}>{photoRetry?"Retry photo":"Publish inspection"}</button>

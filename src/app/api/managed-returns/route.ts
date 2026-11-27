@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hasValidBasicAuth } from "@/lib/basic-auth";
-import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, OUTCOMES, field, isUuid, isoDate, portalEmail } from "@/lib/managed-returns";
+import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, field, isUuid, isoDate, portalEmail } from "@/lib/managed-returns";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,active";
@@ -123,18 +123,16 @@ export async function POST(req: NextRequest) {
     if (action === "inspection") {
       const id = input.id;
       const condition = CONDITIONS.find(x=>x===input.condition);
-      const outcome = OUTCOMES.find(x=>x===input.outcome);
       const summary = field(input.summary,3000);
       const findings = input.findings as Record<string, unknown>;
       const checklist: string[] = Array.isArray(company.checklist) ? company.checklist : [];
-      if (typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || !condition || !outcome || !summary ||
+      if (typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || !condition || !summary ||
         !findings || typeof findings!=="object" || Array.isArray(findings) ||
-        Object.keys(findings).length!==checklist.length || !checklist.every((_,i)=>typeof findings[`check_${i}`]==="boolean")) return bad("Complete every checklist item, select an outcome, and enter a customer-visible summary.");
-      if (outcome==="Approved for resale" && (["Damaged","Defective","Unknown"].includes(condition) || Object.values(findings).includes(false))) return bad("An incomplete, damaged or unverified return cannot be marked ready for resale.");
-      const approved=outcome==="Approved for resale";
+        Object.keys(findings).length!==checklist.length || !checklist.every((_,i)=>typeof findings[`check_${i}`]==="boolean")) return bad("Complete every checklist item and enter a customer-visible summary.");
+      if ("outcome" in input) return bad("Record observations only. The client decides the disposition.");
       const {data,error} = await db.from("returnlab_returns").update({
-        condition, inspection_outcome:outcome, inspection_findings:findings, client_summary:summary, inspected_at:new Date().toISOString(),
-        status:approved?"Completed":"On Hold", action_taken:approved?"Keep (resale)":"Hold for review",
+        condition, inspection_outcome:"Client review required", inspection_findings:findings, client_summary:summary, inspected_at:new Date().toISOString(),
+        status:"On Hold", action_taken:"Hold for review",
       }).eq("client_id",clientId).eq("id",id).in("status",["Received","Processing","Completed","On Hold"]).select(returnFields).maybeSingle();
       if (error) throw error;
       if (!data) return response({error:"Editable return not found in this company."},404);

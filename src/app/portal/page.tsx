@@ -56,8 +56,9 @@ export default async function PortalPage({ searchParams }: {
               <dt className="text-zinc-400">Quantity</dt><dd>{row.qty}</dd>
               {row.inspected_at && <><dt className="text-zinc-400">Condition</dt><dd>{row.condition}</dd></>}
               <dt className="text-zinc-400">Inspection</dt>
-              <dd>{row.inspected_at ? row.inspection_outcome || "Complete" : "Pending"}</dd>
+              <dd>{row.inspected_at ? "Findings posted" : "Pending"}</dd>
             </dl>
+            {row.inspected_at && row.status === "On Hold" && <p className="mt-3 text-sm text-sky-200">Awaiting your decision</p>}
             {row.inspected_at && row.client_summary && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-200">{row.client_summary}</p>}
             {row.inspected_at && row.returnlab_return_photos?.length > 0 && (
               <ul className="mt-4 flex flex-wrap gap-2">
