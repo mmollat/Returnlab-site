@@ -16,7 +16,7 @@ let alphaActive = true;
 let databaseReads = 0;
 const errors = [];
 const row = (returnId, inspected, photoId) => ({
-  merchant_return_id: returnId, date_received: "2026-11-27", status: inspected ? "Completed" : "Received",
+  merchant_return_id: returnId, date_received: "2026-11-27", storage_until:"2026-12-27", status: inspected ? "Completed" : "Received",
   item_sku: "SAMPLE", qty: 1, condition: "Like New", inspection_outcome: inspected ? "Approved for resale" : null,
   inspected_at: inspected ? "2026-11-28T00:00:00.000Z" : null,
   client_summary: inspected ? "Original packaging intact." : null,
@@ -57,7 +57,7 @@ const stub = createServer((request, response) => {
       case "/rest/v1/returnlab_returns": {
         const id = param("client_id")?.slice(3);
         assert.ok(data[id], "company scope must be explicit");
-        assert.equal(param("select"), "merchant_return_id,date_received,status,item_sku,qty,condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)");
+        assert.equal(param("select"), "merchant_return_id,date_received,storage_until,status,item_sku,qty,condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)");
         const filter = url.searchParams.getAll("merchant_return_id").find((value) => value.startsWith("eq."));
         return json(data[id].filter((entry) => !filter || filter === `eq.${entry.merchant_return_id}`));
       }
@@ -118,6 +118,7 @@ try {
   assert.match(alpha.headers.get("cache-control") ?? "", /no-store|no-cache/);
   const alphaHtml = await alpha.text();
   assert.match(alphaHtml, /ALPHA-100/);
+  assert.match(alphaHtml, /2026-12-27/);
   assert.match(alphaHtml, /ALPHA-200/);
   assert.match(alphaHtml, /\/portal\/photos\/101/);
   assert.doesNotMatch(alphaHtml, /BRAVO-100|\/portal\/photos\/102|storage_path/);

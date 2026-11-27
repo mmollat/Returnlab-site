@@ -1,11 +1,12 @@
 import "server-only";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
-const visibleFields = "merchant_return_id,date_received,status,item_sku,qty,condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)";
+const visibleFields = "merchant_return_id,date_received,storage_until,status,item_sku,qty,condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)";
 
 export type PortalReturn = {
   merchant_return_id: string;
   date_received: string;
+  storage_until: string | null;
   status: string;
   item_sku: string | null;
   qty: number;

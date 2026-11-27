@@ -52,6 +52,7 @@ export default async function PortalPage({ searchParams }: {
             </div>
             <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-sm">
               <dt className="text-zinc-400">Received</dt><dd>{row.date_received}</dd>
+              {row.storage_until && <><dt className="text-zinc-400">Storage included through</dt><dd>{row.storage_until}</dd></>}
               {row.item_sku && <><dt className="text-zinc-400">Item</dt><dd className="break-all">{row.item_sku}</dd></>}
               <dt className="text-zinc-400">Quantity</dt><dd>{row.qty}</dd>
               {row.inspected_at && <><dt className="text-zinc-400">Condition</dt><dd>{row.condition}</dd></>}

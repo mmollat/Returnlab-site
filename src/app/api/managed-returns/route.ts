@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hasValidBasicAuth } from "@/lib/basic-auth";
-import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, field, isUuid, isoDate, portalEmail } from "@/lib/managed-returns";
+import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, field, isUuid, isoDate, portalEmail, storageThrough } from "@/lib/managed-returns";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
-const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,active";
-const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,status,condition,inspection_outcome,client_summary,inspected_at";
+const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,included_storage_days,active";
+const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,storage_until,status,condition,inspection_outcome,client_summary,inspected_at";
 function response(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
@@ -58,9 +58,11 @@ export async function POST(req: NextRequest) {
       const monthlyFee = input.monthlyFee ?? 300;
       const included = input.includedReturns ?? 50;
       const overage = input.overageFee ?? 6;
+      const storageDays = input.includedStorageDays ?? 30;
+      if(typeof storageDays!=="number" || !Number.isSafeInteger(storageDays) || storageDays<0 || storageDays>365) return bad("Enter included storage days between 0 and 365.");
       const validPrice = (x: unknown) => typeof x==="number" && Number.isFinite(x) && x>=0 && x<=999999 && Math.abs(x*100-Math.round(x*100))<0.000001;
       if (!validPrice(monthlyFee) || !validPrice(overage) || typeof included!=="number" || !Number.isSafeInteger(included) || included<0 || included>100000) return bad("Enter a valid pricing plan.");
-      const {data,error} = await db.from("returnlab_clients").insert({name,checklist,monthly_fee:monthlyFee,included_returns:included,overage_fee:overage}).select(companyFields).single();
+      const {data,error} = await db.from("returnlab_clients").insert({name,checklist,included_storage_days:storageDays,monthly_fee:monthlyFee,included_returns:included,overage_fee:overage}).select(companyFields).single();
       if (error?.code === "23505") return response({error:"That company already exists."},409);
       if (error) throw error;
       return response({company:data},201);
@@ -114,7 +116,7 @@ export async function POST(req: NextRequest) {
       if (!merchantId || !sku || !isoDate(date) || !carrier || typeof qty !== "number" || !Number.isSafeInteger(qty) || qty<1 || qty>10000) return bad("Enter a return ID, SKU, valid received date, carrier and quantity.");
       const {data,error} = await db.from("returnlab_returns").insert({
         client_id:clientId, client_name:company.name, merchant_return_id:merchantId, item_sku:sku, date_received:date,
-        tracking_number:field(input.tracking,150)||null, carrier, qty, condition:"Unknown", status:"Received", action_taken:"Hold for review",
+        tracking_number:field(input.tracking,150)||null, storage_until:storageThrough(date,company.included_storage_days as number), carrier, qty, condition:"Unknown", status:"Received", action_taken:"Hold for review",
       }).select(returnFields).single();
       if (error?.code === "23505") return response({error:"This return ID, SKU and tracking combination has already been logged."},409);
       if (error) throw error;

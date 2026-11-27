@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST } from "@/lib/managed-returns";
+import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, storageThrough } from "@/lib/managed-returns";
 import { PHOTO_CATEGORIES } from "@/lib/client-workflows";
 
-type Company={id:string; name:string; checklist:string[]; active:boolean};
-type Entry={id:number; merchant_return_id:string; item_sku:string; date_received:string; status:string; condition:string; inspection_outcome:string|null; client_summary:string|null; inspected_at:string|null};
+type Company={id:string; name:string; checklist:string[]; included_storage_days:number; active:boolean};
+type Entry={id:number; merchant_return_id:string; item_sku:string; date_received:string; storage_until:string|null; status:string; condition:string; inspection_outcome:string|null; client_summary:string|null; inspected_at:string|null};
 type Member={email:string;active:boolean};
 type Payload={error?:string;companies?:Company[];company?:Company;returns?:Entry[];members?:Member[]};
 const input="mt-1 block w-full rounded-lg border border-zinc-700 bg-zinc-900 p-2.5 text-sm";
@@ -23,6 +23,7 @@ function localDate() {
   return new Intl.DateTimeFormat("sv-SE",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 }
 export default function ClientWorkspaces(){
+  const [received,setReceived]=useState(localDate);
   const [companies,setCompanies]=useState<Company[]>([]);
   const [clientId,setClientId]=useState("");
   const [data,setData]=useState<{forId:string;entries:Entry[];members:Member[]}>({forId:"",entries:[],members:[]});
@@ -60,7 +61,7 @@ export default function ClientWorkspaces(){
     {message&&<p role="status" className="rounded-xl border border-zinc-700 bg-zinc-900 p-3">{message}</p>}
     <details className={card} open={loaded&&!companies.length?true:undefined}>
       <summary className="cursor-pointer text-lg font-semibold">Add a company</summary>
-      <form className="space-y-4" onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);void perform(async()=>{const result=await request("",{action:"createCompany",name:f.get("name"),checklist:f.get("checklist"),monthlyFee:Number(f.get("monthlyFee")),includedReturns:Number(f.get("includedReturns")),overageFee:Number(f.get("overageFee"))});if(result.company){const created=result.company;setCompanies(p=>[...p,created]);setSelected(null);setClientId(created.id);setMessage(created.name+" is ready for intake. No client email was sent.");}});}}>
+      <form className="space-y-4" onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);void perform(async()=>{const result=await request("",{action:"createCompany",name:f.get("name"),checklist:f.get("checklist"),monthlyFee:Number(f.get("monthlyFee")),includedReturns:Number(f.get("includedReturns")),overageFee:Number(f.get("overageFee")),includedStorageDays:Number(f.get("includedStorageDays"))});if(result.company){const created=result.company;setCompanies(p=>[...p,created]);setSelected(null);setClientId(created.id);setMessage(created.name+" is ready for intake. No client email was sent.");}});}}>
         <label className="block">Company name<input name="name" className={input} required maxLength={100}/></label>
         <label className="block">Inspection checks (one per line)<textarea name="checklist" rows={4} className={input} defaultValue={DEFAULT_CHECKLIST.join("\n")} maxLength={1800}/></label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -68,18 +69,20 @@ export default function ClientWorkspaces(){
           <label>Included returns<input name="includedReturns" type="number" min="0" max="100000" required defaultValue={50} className={input}/></label>
           <label>Additional return ($)<input name="overageFee" type="number" min="0" max="999999" step="0.01" required defaultValue={6} className={input}/></label>
         </div>
+        <label>Included storage (calendar days)<input name="includedStorageDays" type="number" min="0" max="365" required defaultValue={30} className={input}/></label>
         <button className={button} disabled={busy||!loaded}>Create company</button>
       </form>
     </details>
     {companies.length>0&&<label className="block">Company<select className={input} value={clientId} disabled={busy} onChange={e=>{setSelected(null);setPhotoRetry(false);setClientId(e.target.value);setMessage("");}}><option value="" disabled>Choose a company</option>{companies.filter(c=>c.active).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
     {company&&<div className="space-y-6" key={company.id}>
       <div className="grid gap-5 md:grid-cols-2">
-      <form className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{...Object.fromEntries(f),qty:Number(f.get("qty")),action:"arrival",clientId});el.reset();await load(clientId);setMessage("Arrival logged. It is visible as received, pending inspection.");});}}>
+      <form className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{...Object.fromEntries(f),qty:Number(f.get("qty")),action:"arrival",clientId});el.reset();setReceived(localDate());await load(clientId);setMessage("Arrival logged. It is visible as received, pending inspection.");});}}>
         <h2 className="text-xl font-semibold">Log an arrival</h2>
         <label className="block">Merchant return ID<input name="merchantReturnId" className={input} required maxLength={100}/></label>
         <label className="block">Product / SKU<input name="sku" className={input} required maxLength={120}/></label>
-        <label className="block">Date received<input name="received" className={input} type="date" defaultValue={localDate()} required/></label>
+        <label className="block">Date received<input name="received" className={input} type="date" value={received} onChange={e=>setReceived(e.target.value)} required/></label>
         <div className="grid grid-cols-2 gap-3"><label>Carrier<select name="carrier" className={input} defaultValue="Other">{CARRIERS.map(x=><option key={x}>{x}</option>)}</select></label><label>Quantity<input name="qty" className={input} type="number" min={1} max={10000} defaultValue={1} required/></label></div>
+        <label className="block">Included storage through<input type="date" className={input} value={storageThrough(received,company.included_storage_days)} readOnly/><span className="text-xs text-zinc-400">Calculated from receipt. This does not schedule a shipment.</span></label>
         <label className="block">Tracking number (staff only)<input name="tracking" className={input} maxLength={150}/></label>
         <button className={button} disabled={busy}>Log arrival</button>
       </form>
@@ -95,7 +98,7 @@ export default function ClientWorkspaces(){
       </div>
       <section className={card}>
         <h2 className="text-xl font-semibold">Recent returns</h2>
-        {!entries.length?<p className="text-zinc-400">No returns logged yet.</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=><li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><div><strong>{row.merchant_return_id}</strong> · {row.item_sku}<p className="text-sm text-zinc-400">{row.date_received} · {row.inspected_at?"Findings posted · Awaiting client decision":"Pending inspection"}</p></div>{["Received","Processing","Completed","On Hold"].includes(row.status)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setSelected(row);}}>Inspect</button>}</li>)}</ul>}
+        {!entries.length?<p className="text-zinc-400">No returns logged yet.</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=><li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><div><strong>{row.merchant_return_id}</strong> · {row.item_sku}<p className="text-sm text-zinc-400">{row.date_received}{row.storage_until? " · Storage included through "+row.storage_until:""} · {row.inspected_at?"Findings posted · Awaiting client decision":"Pending inspection"}</p></div>{["Received","Processing","Completed","On Hold"].includes(row.status)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setSelected(row);}}>Inspect</button>}</li>)}</ul>}
       </section>
       {selected&&<form key={selected.id} className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el),row=selected;void perform(async()=>{
         const findings=Object.fromEntries(company.checklist.map((_,i)=>[`check_${i}`,f.get(`check_${i}`)==="yes"]));

@@ -5,6 +5,7 @@ create table public.returnlab_clients (
   name text not null check (length(btrim(name)) between 1 and 100),
   active boolean not null default true,
   checklist jsonb not null default '[]'::jsonb check (jsonb_typeof(checklist) = 'array'),
+  included_storage_days integer not null default 30 check (included_storage_days between 0 and 365),
   monthly_fee numeric(10,2) not null default 300 check (monthly_fee >= 0),
   included_returns integer not null default 50 check (included_returns between 0 and 100000),
   overage_fee numeric(10,2) not null default 6 check (overage_fee >= 0),

@@ -18,3 +18,11 @@ export function portalEmail(value: unknown): string {
   const email = field(value, 254).toLowerCase();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
 }
+
+/** Date-only calendar math; browser time zones and daylight saving do not shift it. */
+export function storageThrough(received: string, days: number) {
+  if (!isoDate(received) || !Number.isInteger(days) || days < 0 || days > 365) return "";
+  const date = new Date(received + "T00:00:00Z");
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
