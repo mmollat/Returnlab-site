@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import StaffHeader from "@/components/staff-header";
 import { useMemo, useState } from "react";
 import {
   CLIENT_NAMES,
@@ -247,23 +248,17 @@ export default function IntakePage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
-        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="mb-2 text-sm uppercase tracking-[0.35em] text-zinc-500">
-              ReturnLab Logistics
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Return Intake
-            </h1>
-            <Link href="/intake" className="mt-3 inline-block rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-200">Back to the new intake workspace</Link>
-            <p className="mt-2 text-zinc-400">
-              Guided inspection and photo documentation
-            </p>
-          </div>
-          <span className="w-fit rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400">
-            {successId ? `Return ${successId}` : `${clientName} workflow`}
-          </span>
-        </header>
+        <div className="mb-8">
+          <StaffHeader title="Legacy Return Intake" subtitle="Guided inspection and photo documentation">
+            <div className="flex flex-wrap items-center gap-4">
+              <Link href="/intake" className="text-sm text-emerald-300">New staff intake</Link>
+              <Link href="/reports" className="text-sm text-emerald-300">Staff reports</Link>
+              <span className="w-fit rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-400">
+                {successId ? `Return ${successId}` : `${clientName} workflow`}
+              </span>
+            </div>
+          </StaffHeader>
+        </div>
 
         <ol className="mb-6 grid grid-cols-5 gap-2" aria-label="Intake progress">
           {steps.map((step, index) => (

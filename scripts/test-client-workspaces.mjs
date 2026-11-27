@@ -36,9 +36,9 @@ const server=createServer(async(req,res)=>{
   }
   if(pathname.endsWith("/returnlab_client_instructions"))return reply(instructions.filter(r=>r.client_id===qs("client_id")&&r.return_id===Number(qs("return_id"))));
   if(pathname.endsWith("/returnlab_returns")){
-    if(req.method==="POST"){const row={id:entries.length+1,...input};entries.push(row);return reply([row],201);}
+    if(req.method==="POST"){if(input.tracking_number&&entries.some(row=>row.client_name===input.client_name&&row.tracking_number?.toLowerCase()===input.tracking_number.toLowerCase()))return json({code:"23505",message:"Duplicate tracking"},409);const row={id:entries.length+1,...input};entries.push(row);return reply([row],201);}
     const status=qs("status");
-    const matched=entries.filter(r=>(!qs("client_id")||r.client_id===qs("client_id"))&&(!qs("id")||r.id===Number(qs("id")))&&(!status||(status.startsWith("in.(")?status.slice(4,-1).split(",").includes(r.status):r.status===status)));
+    const matched=entries.filter(r=>(!qs("client_id")||r.client_id===qs("client_id"))&&(!qs("id")||r.id===Number(qs("id")))&&(!url.searchParams.has("inspected_at")||Boolean(r.inspected_at))&&(!status||(status.startsWith("in.(")?status.slice(4,-1).split(",").includes(r.status):r.status===status)));
     if(req.method==="PATCH")matched.forEach(x=>Object.assign(x,input));
     return reply(matched);
   }
@@ -64,7 +64,13 @@ try{
  assert.equal(initial.clientPlans.find(x=>x.name==="CTH").baseFee,800);
  assert.equal((await fetch(origin+"/intake/clients")).status,401);
  const html=await fetch(origin+"/intake",{headers:{authorization}});
- assert.equal(html.status,200);assert.match(await html.text(),/Client workspaces/);
+ assert.equal(html.status,200);assert.match(await html.text(),/returnlab-staff-logo\.png/);
+ assert.equal((await fetch(origin+"/returnlab-staff-logo.png")).status,200);
+ for(const path of ["/reports","/intake/legacy"]){
+   const page=await fetch(origin+path,{headers:{authorization}});
+   assert.equal(page.status,200);
+   assert.match(await page.text(),/returnlab-staff-logo\.png/);
+ }
  await json(await rest({action:"createCompany",name:"No"}, ""),401);
  await json(await rest({action:"createCompany",name:"Cross origin"},authorization,"","https://other.example"),403);
  const a=(await json(await rest({action:"createCompany",name:"Fixture A",checklist:"Condition\nAccessories",monthlyFee:320,includedReturns:45,overageFee:5}),201)).company;
@@ -74,6 +80,32 @@ try{
  await json(await rest({action:"grantAccess",clientId:b.id,email:"client@example.test"}),409);
  assert.equal(postToOtp,0);
  await json(await rest({action:"grantAccess",clientId:companies[0].id,email:"staff-only@example.test"}),400);
+ const cth=companies[0].id;
+ const cthForm={action:"arrival",clientId:cth,received:"2026-11-27",carrier:"UPS",qty:1,tracking:"FIXTURE-CTH-1",returnReason:"Test reason"};
+ const cthRow=(await json(await rest(cthForm),201)).entry;
+ assert.equal(cthRow.status,"Received");
+ assert.equal(cthRow.storage_until,null);
+ assert.equal(cthRow.tracking_number,"FIXTURE-CTH-1");
+ assert.match(cthRow.merchant_return_id,/^CTH-/);
+ await json(await rest({...cthForm,tracking:"fixture-cth-1"}),409);
+ const dispose={action:"completeCthDisposal",clientId:cth,id:cthRow.id,confirmCompleted:true};
+ await json(await rest(dispose),409);
+ await json(await rest({...dispose,clientId:a.id}),400);
+ const cthInspection={action:"inspection",clientId:cth,id:cthRow.id,condition:"No visible issues",summary:"Staff only",findings:{},minutes:2};
+ await json(await rest({...cthInspection,minutes:-1}),400);
+ const cthInspected=(await json(await rest(cthInspection),200)).entry;
+ assert.equal(cthInspected.status,"Processing");
+ assert.equal(cthInspected.inspection_notes,"Staff only");
+ assert.equal(cthInspected.client_summary,undefined);
+ assert.equal(cthInspected.time_spent_minutes,2);
+ const photo=new FormData();photo.set("returnId",String(cthRow.id));photo.set("category","Issue close-up");photo.set("clientVisible","true");photo.set("file",new Blob(["fixture"],{type:"image/png"}),"test.png");
+ await json(await fetch(origin+"/api/returns/photos",{method:"POST",headers:{authorization},body:photo}),400);
+ await json(await rest({...dispose,confirmCompleted:false}),400);
+ const cthDisposed=(await json(await rest(dispose),200)).entry;
+ assert.equal(cthDisposed.status,"Disposed");
+ assert.equal(cthDisposed.action_taken,"Dispose");
+ await json(await rest(dispose),409);
+ await json(await rest(cthInspection),404);
  const form={action:"arrival",clientId:a.id,merchantReturnId:"MB-100",sku:"BACKGAMMON",received:"2026-11-27",carrier:"UPS",qty:1};
  const row=(await json(await rest(form),201)).entry;
  assert.equal(row.storage_until,"2026-12-27");assert.equal(row.status,"Received");assert.equal(row.action_taken,"Hold for review");
@@ -86,7 +118,7 @@ try{
  assert.equal(inspected.status,"On Hold");
  assert.equal(inspected.observed_condition,"No visible issues");
  assert.equal(inspected.inspection_outcome,"Client review required");
- assert.equal(entries[0].action_taken,"Hold for review");
+ assert.equal(entries.find(e=>e.id===row.id).action_taken,"Hold for review");
  assert.equal(inspected.client_summary,"Complete set.");
  const fulfill={action:"completeInstruction",clientId:a.id,id:row.id,instruction:"disposal_authorized",confirmCompleted:true};
  await json(await rest(fulfill),409);

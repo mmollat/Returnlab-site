@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (clientVisible && (!returnRecord.client_id || !returnRecord.inspected_at || category === "Product label")) {
+  if (clientVisible && (returnRecord.client_name === "CTH" || !returnRecord.client_id || !returnRecord.inspected_at || category === "Product label")) {
     return NextResponse.json({ok:false,error:"Only approved inspection photos may be shared with the client."},{status:400});
   }
   const { count, error: countError } = await supabase
