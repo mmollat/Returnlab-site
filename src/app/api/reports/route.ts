@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
     if (pricingError && !["42P01","PGRST205"].includes(pricingError.code)) throw pricingError;
     for (const plan of (pricing ?? []) as ManagedPricing[]) if (plan.name !== "CTH" && plan.name !== "DGM Group") managed.set(plan.name, plan);
     const reports = buildReports(returnsWithPhotoUrls, managed);
-    const clientNames = Array.from(new Set(["CTH","DGM Group",...managed.keys(),...reports.map(row=>row.client_name)]));
+    const clientNames = Array.from(new Set(["CTH",...managed.keys(),...reports.map(row=>row.client_name)]));
     const clientPlans = clientNames.map(name=>({name,...pricingFor(name,managed)}));
     // Older browser bundles still expect the original array.
     const payload = request.nextUrl.searchParams.get("format")==="dashboard" ? {reports,clientPlans} : reports;
