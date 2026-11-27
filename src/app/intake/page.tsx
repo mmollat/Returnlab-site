@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   CLIENT_NAMES,
@@ -254,6 +255,7 @@ export default function IntakePage() {
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               Return Intake
             </h1>
+            <Link href="/intake/clients" className="mt-3 inline-block rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-200">Client workspaces</Link>
             <p className="mt-2 text-zinc-400">
               Guided inspection and photo documentation
             </p>
