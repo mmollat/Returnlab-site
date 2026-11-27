@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import StaffHeader from "@/components/staff-header";
+import IntakeDateInput from "@/components/intake-date-input";
 import { useCallback, useEffect, useState } from "react";
 import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, storageThrough } from "@/lib/managed-returns";
 import { PHOTO_CATEGORIES } from "@/lib/client-workflows";
@@ -94,7 +95,7 @@ export default function ClientWorkspaces(){
         {isCth ? <p className="text-sm text-zinc-400">Staff only. Inspect the return, then record disposal after it happens. No client approval is needed.</p> :
           <label className="block">Merchant return ID<input name="merchantReturnId" className={input} required maxLength={100}/></label>}
         <label className="block">Product / SKU{isCth?" (optional)":""}<input name="sku" className={input} required={!isCth} maxLength={120}/></label>
-        <label className="block">Date received<input name="received" className={input} type="date" value={received} onChange={e=>setReceived(e.target.value)} required/></label>
+        <label className="block">Date received<IntakeDateInput name="received" className={input} value={received} onChange={e=>setReceived(e.target.value)} required/></label>
         <div className="grid grid-cols-2 gap-3"><label>Carrier<select name="carrier" className={input} defaultValue="Other">{CARRIERS.map(x=><option key={x}>{x}</option>)}</select></label><label>Quantity<input name="qty" className={input} type="number" min={1} max={10000} defaultValue={1} required/></label></div>
         {!isCth&&<label className="block">Included storage through<input type="date" className={input} value={storageThrough(received,company.included_storage_days)} readOnly/><span className="text-xs text-zinc-400">Calculated from receipt. This does not schedule a shipment.</span></label>}
         <label className="block">Tracking number (staff only)<input name="tracking" className={input} maxLength={150}/></label>
