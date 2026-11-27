@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
     const { data: pricing, error: pricingError } = await supabase.from("returnlab_clients").select("name,monthly_fee,included_returns,overage_fee");
     // Compatibility while the additive migration is not yet installed.
     if (pricingError && !["42P01","PGRST205"].includes(pricingError.code)) throw pricingError;
-    for (const plan of (pricing ?? []) as ManagedPricing[]) managed.set(plan.name, plan);
+    for (const plan of (pricing ?? []) as ManagedPricing[]) if (plan.name !== "CTH" && plan.name !== "DGM Group") managed.set(plan.name, plan);
     return NextResponse.json(buildReports(returnsWithPhotoUrls, managed), {
       headers: { "Cache-Control": "no-store" },
     });

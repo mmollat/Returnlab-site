@@ -4,8 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, storageThrough } from "@/lib/managed-returns";
 import { PHOTO_CATEGORIES } from "@/lib/client-workflows";
 
-type Company={id:string; name:string; checklist:string[]; included_storage_days:number; active:boolean};
-type Entry={id:number; merchant_return_id:string; item_sku:string; date_received:string; storage_until:string|null; status:string; condition:string; inspection_outcome:string|null; client_summary:string|null; inspected_at:string|null};
+type Company={id:string; name:string; checklist:string[]; included_storage_days:number; portal_enabled:boolean; active:boolean};
+type ClientInstruction={instruction:"warehouse_hold"|"disposal_authorized";submitted_at:string};
+function instructionFor(entry:Entry){ const value=entry.returnlab_client_instructions; return Array.isArray(value)?value[0]:value; }
+type Entry={id:number; merchant_return_id:string; item_sku:string; date_received:string; storage_until:string|null; status:string; condition:string; inspection_outcome:string|null; client_summary:string|null; inspected_at:string|null; returnlab_client_instructions?:ClientInstruction|ClientInstruction[]|null};
 type Member={email:string;active:boolean};
 type Payload={error?:string;companies?:Company[];company?:Company;returns?:Entry[];members?:Member[]};
 const input="mt-1 block w-full rounded-lg border border-zinc-700 bg-zinc-900 p-2.5 text-sm";
@@ -28,6 +30,7 @@ export default function ClientWorkspaces(){
   const [clientId,setClientId]=useState("");
   const [data,setData]=useState<{forId:string;entries:Entry[];members:Member[]}>({forId:"",entries:[],members:[]});
   const [selected,setSelected]=useState<Entry|null>(null);
+  const [completion,setCompletion]=useState<Entry|null>(null);
   const [message,setMessage]=useState("");
   const [busy,setBusy]=useState(false);
   const [loaded,setLoaded]=useState(false);
@@ -57,7 +60,7 @@ export default function ClientWorkspaces(){
     try {await fn();} catch(e){setMessage(e instanceof Error?e.message:"Something went wrong.");} finally{setBusy(false);}
   }
   return <main className="mx-auto min-h-screen max-w-5xl space-y-6 bg-black px-4 py-8 text-white sm:px-8">
-    <header><Link href="/intake" className="text-sm text-emerald-300">← Existing intake</Link><h1 className="mt-3 text-3xl font-semibold">Client workspaces</h1><p className="mt-2 text-zinc-400">Add a company, log arrivals, and control who can see them in the client portal.</p></header>
+    <header><Link href="/intake/legacy" className="text-sm text-emerald-300">Open staff-only CTH / DGM intake</Link><h1 className="mt-3 text-3xl font-semibold">Client workspaces</h1><p className="mt-2 text-zinc-400">Add a company, log arrivals, and control who can see them in the client portal.</p></header>
     {message&&<p role="status" className="rounded-xl border border-zinc-700 bg-zinc-900 p-3">{message}</p>}
     <details className={card} open={loaded&&!companies.length?true:undefined}>
       <summary className="cursor-pointer text-lg font-semibold">Add a company</summary>
@@ -73,10 +76,10 @@ export default function ClientWorkspaces(){
         <button className={button} disabled={busy||!loaded}>Create company</button>
       </form>
     </details>
-    {companies.length>0&&<label className="block">Company<select className={input} value={clientId} disabled={busy} onChange={e=>{setSelected(null);setPhotoRetry(false);setClientId(e.target.value);setMessage("");}}><option value="" disabled>Choose a company</option>{companies.filter(c=>c.active).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
+    {companies.length>0&&<label className="block">Company<select className={input} value={clientId} disabled={busy} onChange={e=>{setSelected(null);setCompletion(null);setPhotoRetry(false);setClientId(e.target.value);setMessage("");}}><option value="" disabled>Choose a company</option>{companies.filter(c=>c.active).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
     {company&&<div className="space-y-6" key={company.id}>
       <div className="grid gap-5 md:grid-cols-2">
-      <form className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{...Object.fromEntries(f),qty:Number(f.get("qty")),action:"arrival",clientId});el.reset();setReceived(localDate());await load(clientId);setMessage("Arrival logged. It is visible as received, pending inspection.");});}}>
+      {company.name === "CTH" ? <section className={card}><h2 className="text-xl font-semibold">CTH intake</h2><p className="text-sm text-zinc-400">Staff only. Use the existing CTH workflow to log returns and record disposal once it happens.</p><Link href="/intake/legacy" className="text-emerald-300">Open CTH intake</Link></section> : <form className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{...Object.fromEntries(f),qty:Number(f.get("qty")),action:"arrival",clientId});el.reset();setReceived(localDate());await load(clientId);setMessage("Arrival logged. It is visible as received, pending inspection.");});}}>
         <h2 className="text-xl font-semibold">Log an arrival</h2>
         <label className="block">Merchant return ID<input name="merchantReturnId" className={input} required maxLength={100}/></label>
         <label className="block">Product / SKU<input name="sku" className={input} required maxLength={120}/></label>
@@ -85,8 +88,8 @@ export default function ClientWorkspaces(){
         <label className="block">Included storage through<input type="date" className={input} value={storageThrough(received,company.included_storage_days)} readOnly/><span className="text-xs text-zinc-400">Calculated from receipt. This does not schedule a shipment.</span></label>
         <label className="block">Tracking number (staff only)<input name="tracking" className={input} maxLength={150}/></label>
         <button className={button} disabled={busy}>Log arrival</button>
-      </form>
-      <section className={card}>
+      </form>}
+      {company.portal_enabled && <section className={card}>
         <h2 className="text-xl font-semibold">Portal access</h2>
         <p className="text-sm text-zinc-400">Granting access does not send an invitation. The client requests a sign-in code at <Link href="/portal" className="text-emerald-300">the portal</Link>.</p>
         <form className="space-y-3" onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{action:"grantAccess",clientId,email:f.get("email")});el.reset();await load(clientId);setMessage("Portal access granted. No client email was sent.");});}}>
@@ -94,17 +97,22 @@ export default function ClientWorkspaces(){
           <button className={button} disabled={busy}>Grant access</button>
         </form>
         <ul className="space-y-2">{members.filter(m=>m.active).map(m=><li key={m.email} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-800 p-2"><span className="break-all text-sm">{m.email}</span><button type="button" disabled={busy} className="text-sm text-amber-200" onClick={()=>void perform(async()=>{await request("",{action:"revokeAccess",clientId,email:m.email});await load(clientId);setMessage("Portal access revoked.");})}>Revoke</button></li>)}</ul>
-      </section>
+      </section>}
       </div>
-      <section className={card}>
+      {company.name !== "CTH" && <section className={card}>
         <h2 className="text-xl font-semibold">Recent returns</h2>
-        {!entries.length?<p className="text-zinc-400">No returns logged yet.</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=><li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><div><strong>{row.merchant_return_id}</strong> · {row.item_sku}<p className="text-sm text-zinc-400">{row.date_received}{row.storage_until? " · Storage included through "+row.storage_until:""} · {row.inspected_at?"Findings posted · Awaiting client decision":"Pending inspection"}</p></div>{["Received","Processing","Completed","On Hold"].includes(row.status)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setSelected(row);}}>Inspect</button>}</li>)}</ul>}
-      </section>
+        {!entries.length?<p className="text-zinc-400">No returns logged yet.</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=><li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><div><strong>{row.merchant_return_id}</strong> · {row.item_sku}<p className="text-sm text-zinc-400">{row.date_received}{row.storage_until? " · Storage included through "+row.storage_until:""} · {row.status==="Disposed"?"Disposed":row.status==="Returned"?"Shipped to warehouse":row.inspected_at?(instructionFor(row)?.instruction==="warehouse_hold"?"Hold for warehouse shipment":instructionFor(row)?.instruction==="disposal_authorized"?"Disposal authorized (not completed)":company.name==="CTH"?"Findings posted":"Findings posted · Awaiting client decision"):"Pending inspection"}</p></div>{company.name!=="CTH"&&["Received","Processing","Completed","On Hold"].includes(row.status)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setSelected(row);}}>Inspect</button>}{row.status==="On Hold"&&instructionFor(row)&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setSelected(null);setCompletion(row);}}>Record completed action</button>}</li>)}</ul>}
+      </section>}
+      {completion && <form key={completion.id} className={card} onSubmit={e=>{e.preventDefault();const row=completion;const instruction=instructionFor(row)?.instruction;void perform(async()=>{await request("",{action:"completeInstruction",clientId,id:row.id,instruction,confirmCompleted:true});setCompletion(null);await load(clientId);setMessage("Completed action recorded. Nothing was shipped or disposed by this app.");});}}>
+        <h2 className="text-xl font-semibold">Record completion for {completion.merchant_return_id}</h2>
+        <label className="flex items-start gap-2"><input className="mt-1" type="checkbox" required/> {instructionFor(completion)?.instruction==="warehouse_hold"?"This return was handed off for shipment to the agreed U.S. warehouse.":"This return was physically disposed of as authorized."}</label>
+        <button className={button} disabled={busy}>Record completion</button><button type="button" className="ml-3" onClick={()=>setCompletion(null)}>Cancel</button>
+      </form>}
       {selected&&<form key={selected.id} className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el),row=selected;void perform(async()=>{
         const findings=Object.fromEntries(company.checklist.map((_,i)=>[`check_${i}`,f.get(`check_${i}`)==="yes"]));
         if (!photoRetry) await request("",{action:"inspection",clientId,id:row.id,condition:f.get("condition"),summary:f.get("summary"),findings});
         const photos=f.get("photo"); if(photos instanceof File&&photos.size){
-          const payload=new FormData();payload.set("file",photos);payload.set("returnId",String(row.id));payload.set("category",String(f.get("category")));
+          const payload=new FormData();payload.set("file",photos);payload.set("returnId",String(row.id));payload.set("category",String(f.get("category")));payload.set("clientVisible","true");
           const upload=await fetch("/api/returns/photos",{method:"POST",body:payload}).catch(()=>null);
           if (!upload?.ok){setPhotoRetry(true);await load(clientId);setMessage("Inspection saved, but the photo did not upload. Retry the photo here.");return;}
         }
@@ -117,7 +125,7 @@ export default function ClientWorkspaces(){
         </div>
         <fieldset className="space-y-2"><legend>Checklist</legend>{company.checklist.map((check,i)=><label key={check} className="flex flex-wrap items-center justify-between gap-2">{check}<select name={`check_${i}`} required defaultValue="" className="rounded border border-zinc-700 bg-zinc-900 p-1"><option value="" disabled>Choose</option><option value="yes">Verified / no issue</option><option value="no">Issue / unverified</option></select></label>)}</fieldset>
         <label className="block">Client-visible findings<textarea name="summary" className={input} required rows={3} maxLength={3000} defaultValue={selected.client_summary??""} placeholder="What the client needs to decide the refund. Do not include internal notes or personal information."/></label>
-        <div className="grid gap-3 md:grid-cols-2"><label>Optional client-visible photo<input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className={input}/></label><label>Photo category<select name="category" className={input} defaultValue="Issue close-up">{PHOTO_CATEGORIES.map(x=><option key={x}>{x}</option>)}</select></label></div>
+        <div className="grid gap-3 md:grid-cols-2"><label>Optional client-visible photo<input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" className={input}/></label><label>Photo category<select name="category" className={input} defaultValue="Issue close-up">{PHOTO_CATEGORIES.filter(x=>x!=="Product label").map(x=><option key={x}>{x}</option>)}</select></label></div>
         <button className={button} disabled={busy}>{photoRetry?"Retry photo":"Publish inspection"}</button>
         <button type="button" disabled={busy} className="ml-4 text-sm text-zinc-300" onClick={()=>{setPhotoRetry(false);setSelected(null);}}>Close</button>
       </form>}

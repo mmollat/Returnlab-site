@@ -3,6 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
+export type ActivePortalCompany = {
+  id: string;
+  name: string;
+  client_instructions_enabled: boolean;
+};
+
 export const portalCookie = "returnlab-client-session";
 
 export function normalizePortalEmail(value: string) {
@@ -28,16 +34,22 @@ export async function getActivePortalCompany(email: string, verifiedUserId?: str
   if (membership.error) throw new Error("Client membership lookup failed.");
   if (!membership.data) return null;
   const company = await db.from("returnlab_clients")
-    .select("id,name").eq("id", membership.data.client_id).eq("active", true).maybeSingle();
+    .select("id,name,client_instructions_enabled").eq("id", membership.data.client_id).eq("active", true).eq("portal_enabled", true).maybeSingle();
   if (company.error) throw new Error("Client account lookup failed.");
-  return company.data as { id: string; name: string } | null;
+  return company.data as ActivePortalCompany | null;
 }
 
-export async function getPortalCompany() {
+export async function getPortalIdentity() {
   const token = (await cookies()).get(portalCookie)?.value;
   if (!token) return null;
   const { data, error } = await portalAuth().getUser(token);
   if (error || !data.user?.email_confirmed_at || !data.user.email) return null;
   const email = normalizePortalEmail(data.user.email);
-  return email ? getActivePortalCompany(email, data.user.id) : null;
+  if (!email) return null;
+  const company = await getActivePortalCompany(email, data.user.id);
+  return company ? { company, userId: data.user.id } : null;
+}
+
+export async function getPortalCompany() {
+  return (await getPortalIdentity())?.company ?? null;
 }

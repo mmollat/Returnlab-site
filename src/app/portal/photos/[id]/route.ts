@@ -12,7 +12,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const db = getSupabaseAdmin();
   const { data: photo, error } = await db.from("returnlab_return_photos")
     .select("storage_path,content_type,returnlab_returns!inner(client_id,merchant_return_id,inspected_at)")
-    .eq("id", id).eq("returnlab_returns.client_id", company.id)
+    .eq("id", id).eq("client_visible", true).eq("returnlab_returns.client_id", company.id)
     .not("returnlab_returns.merchant_return_id", "is", null)
     .not("returnlab_returns.inspected_at", "is", null).maybeSingle();
   if (error || !photo || !types.has(photo.content_type)) return new Response(null, { status: 404, headers: privateHeaders });

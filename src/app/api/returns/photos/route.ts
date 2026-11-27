@@ -36,6 +36,11 @@ function extensionFor(contentType: string) {
 
 export async function POST(request: NextRequest) {
   if (!hasValidBasicAuth(request)) return unauthorized();
+  const origin = request.headers.get("origin"), host = request.headers.get("host");
+  if (request.headers.get("sec-fetch-site") === "cross-site" ||
+      (origin && (!host || ![`https://${host}`, ...(process.env.NODE_ENV !== "production" ? [`http://${host}`] : [])].includes(origin)))) {
+    return NextResponse.json({ok:false,error:"Invalid request origin."},{status:403});
+  }
 
   let formData: FormData;
 
@@ -51,6 +56,7 @@ export async function POST(request: NextRequest) {
   const returnId = Number(formData.get("returnId"));
   const category = String(formData.get("category") ?? "");
   const file = formData.get("file");
+  const clientVisible = formData.get("clientVisible") === "true";
 
   if (
     !Number.isInteger(returnId) ||
@@ -78,7 +84,7 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabaseAdmin();
   const { data: returnRecord, error: returnError } = await supabase
     .from("returnlab_returns")
-    .select("id, client_name")
+    .select("id, client_name, client_id, inspected_at")
     .eq("id", returnId)
     .maybeSingle();
 
@@ -97,6 +103,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (clientVisible && (!returnRecord.client_id || !returnRecord.inspected_at || category === "Product label")) {
+    return NextResponse.json({ok:false,error:"Only approved inspection photos may be shared with the client."},{status:400});
+  }
   const { count, error: countError } = await supabase
     .from("returnlab_return_photos")
     .select("id", { count: "exact", head: true })
@@ -148,6 +157,7 @@ export async function POST(request: NextRequest) {
       original_filename: file.name || null,
       content_type: file.type,
       size_bytes: file.size,
+      ...(clientVisible ? {client_visible:true} : {}),
     })
     .select("id, photo_category")
     .single();

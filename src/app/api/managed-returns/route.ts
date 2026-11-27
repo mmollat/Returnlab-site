@@ -3,8 +3,8 @@ import { hasValidBasicAuth } from "@/lib/basic-auth";
 import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, field, isUuid, isoDate, portalEmail, storageThrough } from "@/lib/managed-returns";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
-const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,included_storage_days,active";
-const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,storage_until,status,condition,inspection_outcome,client_summary,inspected_at";
+const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,included_storage_days,portal_enabled,active";
+const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,storage_until,status,condition,inspection_outcome,client_summary,inspected_at,returnlab_client_instructions(instruction,submitted_at)";
 function response(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
     const company = result.data;
     if (!company) return response({error:"Active company not found."},404);
     if (action === "grantAccess" || action === "revokeAccess") {
+      if (!company.portal_enabled) return bad("This company is staff-only; client portal access is disabled.");
       const email = portalEmail(input.email);
       if (!email) return bad("Enter a valid email.");
       let result;
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
       if (error) throw error;
       return response({ok:true});
     }
+    if (company.name === "CTH") return bad("Use the CTH intake workflow to preserve its existing processing rules.");
     if (action === "arrival") {
       const merchantId = field(input.merchantReturnId,100);
       const sku = field(input.sku,120);
@@ -121,6 +123,20 @@ export async function POST(req: NextRequest) {
       if (error?.code === "23505") return response({error:"This return ID, SKU and tracking combination has already been logged."},409);
       if (error) throw error;
       return response({entry:data},201);
+    }
+    if (action === "completeInstruction") {
+      const id=input.id;
+      if(typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || input.confirmCompleted!==true) return bad("Confirm that the physical action is complete.");
+      const {data:instruction,error:instructionError}=await db.from("returnlab_client_instructions").select("instruction").eq("client_id",clientId).eq("return_id",id).maybeSingle();
+      if(instructionError) throw instructionError;
+      if(!instruction) return response({error:"No client instruction is recorded."},409);
+      if(input.instruction!==instruction.instruction) return response({error:"The instruction does not match this return."},409);
+      const shipped=instruction.instruction==="warehouse_hold";
+      const fields=shipped ? {status:"Returned",action_taken:"Return to Client",outbound_status:"Tendered to carrier"} : {status:"Disposed",action_taken:"Dispose"};
+      const {data,error}=await db.from("returnlab_returns").update(fields).eq("client_id",clientId).eq("id",id).eq("status","On Hold").select(returnFields).maybeSingle();
+      if(error)throw error;
+      if(!data)return response({error:"This return is no longer on hold."},409);
+      return response({entry:data});
     }
     if (action === "inspection") {
       const id = input.id;

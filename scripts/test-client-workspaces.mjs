@@ -3,7 +3,8 @@ import {spawn} from "node:child_process";
 import {createServer} from "node:http";
 import {once} from "node:events";
 import {randomUUID} from "node:crypto";
-const companies=[], members=[], entries=[], users=new Map();
+const instructions=[];
+const companies=[{id:randomUUID(),name:"CTH",active:true,portal_enabled:false,included_storage_days:0,checklist:[]}], members=[], entries=[], users=new Map();
 let postToOtp=0;
 const server=createServer(async(req,res)=>{
  const url=new URL(req.url,"http://localhost");
@@ -24,7 +25,7 @@ const server=createServer(async(req,res)=>{
   }
   if(pathname==="/auth/v1/otp"){postToOtp++;return json({},200);}
   if(pathname.endsWith("/returnlab_clients")){
-    if(req.method==="POST"){const row={id:randomUUID(),active:true,...input};companies.push(row);return reply([row],201);}
+    if(req.method==="POST"){const row={id:randomUUID(),active:true,portal_enabled:true,...input};companies.push(row);return reply([row],201);}
     return reply(companies.filter(r=>!qs("id")||r.id===qs("id")));
   }
   if(pathname.endsWith("/returnlab_client_members")){
@@ -33,9 +34,11 @@ const server=createServer(async(req,res)=>{
     if(req.method==="PATCH"){matched.forEach(row=>Object.assign(row,input));return json([]);}
     return reply(matched);
   }
+  if(pathname.endsWith("/returnlab_client_instructions"))return reply(instructions.filter(r=>r.client_id===qs("client_id")&&r.return_id===Number(qs("return_id"))));
   if(pathname.endsWith("/returnlab_returns")){
     if(req.method==="POST"){const row={id:entries.length+1,...input};entries.push(row);return reply([row],201);}
-    const matched=entries.filter(r=>r.client_id===qs("client_id")&&(!qs("id")||r.id===Number(qs("id"))));
+    const status=qs("status");
+    const matched=entries.filter(r=>r.client_id===qs("client_id")&&(!qs("id")||r.id===Number(qs("id")))&&(!status||(status.startsWith("in.(")?status.slice(4,-1).split(",").includes(r.status):r.status===status)));
     if(req.method==="PATCH")matched.forEach(x=>Object.assign(x,input));
     return reply(matched);
   }
@@ -55,7 +58,7 @@ try{
  for(let attempt=0;attempt<45;attempt++){try{const r=await rest(null,"");if(r.status===401){ready=true;break;}}catch{};await new Promise(r=>setTimeout(r,750));}
  assert.ok(ready);
  assert.equal((await fetch(origin+"/intake/clients")).status,401);
- const html=await fetch(origin+"/intake/clients",{headers:{authorization}});
+ const html=await fetch(origin+"/intake",{headers:{authorization}});
  assert.equal(html.status,200);assert.match(await html.text(),/Client workspaces/);
  await json(await rest({action:"createCompany",name:"No"}, ""),401);
  await json(await rest({action:"createCompany",name:"Cross origin"},authorization,"","https://other.example"),403);
@@ -65,6 +68,7 @@ try{
  await json(await rest({action:"grantAccess",clientId:a.id,email:" CLIENT@example.test  "}),200);
  await json(await rest({action:"grantAccess",clientId:b.id,email:"client@example.test"}),409);
  assert.equal(postToOtp,0);
+ await json(await rest({action:"grantAccess",clientId:companies[0].id,email:"staff-only@example.test"}),400);
  const form={action:"arrival",clientId:a.id,merchantReturnId:"MB-100",sku:"BACKGAMMON",received:"2026-11-27",carrier:"UPS",qty:1};
  const row=(await json(await rest(form),201)).entry;
  assert.equal(row.storage_until,"2026-12-27");assert.equal(row.status,"Received");assert.equal(row.action_taken,"Hold for review");
@@ -79,6 +83,14 @@ try{
  assert.equal(inspected.inspection_outcome,"Client review required");
  assert.equal(entries[0].action_taken,"Hold for review");
  assert.equal(inspected.client_summary,"Complete set.");
+ const fulfill={action:"completeInstruction",clientId:a.id,id:row.id,instruction:"disposal_authorized",confirmCompleted:true};
+ await json(await rest(fulfill),409);
+ instructions.push({client_id:a.id,return_id:row.id,instruction:"disposal_authorized"});
+ await json(await rest({...fulfill,confirmCompleted:false}),400);
+ await json(await rest({...fulfill,instruction:"warehouse_hold"}),409);
+ const completed=(await json(await rest(fulfill),200)).entry;
+ assert.equal(completed.status,"Disposed");
+ await json(await rest(fulfill),409);
  const bResult=await json(await rest(undefined,authorization,"?client="+b.id),200);
  assert.equal(bResult.returns.length,0);
  await json(await rest({action:"revokeAccess",clientId:a.id,email:"client@example.test"}),200);
