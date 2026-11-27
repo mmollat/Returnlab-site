@@ -135,9 +135,9 @@ export async function POST(req: NextRequest) {
       const id=input.id;
       if(typeof id!=="number" || !Number.isSafeInteger(id) || id<1 || input.confirmCompleted!==true) return bad("Confirm that this return has already been physically disposed of.");
       const {data,error}=await db.from("returnlab_returns").update({status:"Disposed",action_taken:"Dispose"})
-        .eq("client_id",clientId).eq("id",id).eq("status","Processing").not("inspected_at","is",null).select(returnFields).maybeSingle();
+        .eq("client_id",clientId).eq("id",id).in("status",["Received","Processing"]).select(returnFields).maybeSingle();
       if(error) throw error;
-      if(!data) return response({error:"This CTH return must be inspected and awaiting disposal."},409);
+      if(!data) return response({error:"This CTH return is no longer awaiting disposal."},409);
       return response({entry:data});
     }
     if (action === "completeInstruction") {

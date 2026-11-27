@@ -94,8 +94,16 @@ try{
  assert.match(cthRow.merchant_return_id,/^CTH-/);
  await json(await rest({...cthForm,tracking:"fixture-cth-1"}),409);
  const dispose={action:"completeCthDisposal",clientId:cth,id:cthRow.id,confirmCompleted:true};
- await json(await rest(dispose),409);
  await json(await rest({...dispose,clientId:a.id}),400);
+ const skipRow=(await json(await rest({...cthForm,tracking:"FIXTURE-CTH-SKIP"}),201)).entry;
+ assert.equal(skipRow.action_taken,"Hold for review");
+ const skipDisposal={...dispose,id:skipRow.id};
+ await json(await rest({...skipDisposal,confirmCompleted:false}),400);
+ const skipCompleted=(await json(await rest(skipDisposal),200)).entry;
+ assert.equal(skipCompleted.status,"Disposed");
+ assert.equal(skipCompleted.action_taken,"Dispose");
+ assert.equal(skipCompleted.inspected_at??null,null);
+ await json(await rest(skipDisposal),409);
  const cthInspection={action:"inspection",clientId:cth,id:cthRow.id,condition:"No visible issues",summary:"Staff only",findings:{},minutes:2};
  await json(await rest({...cthInspection,minutes:-1}),400);
  const cthInspected=(await json(await rest(cthInspection),200)).entry;

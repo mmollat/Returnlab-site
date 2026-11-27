@@ -90,9 +90,9 @@ export default function ClientWorkspaces(){
     {companies.length>0&&<label className="block">Company<select className={input} value={clientId} disabled={busy} onChange={e=>{setSelected(null);setCompletion(null);setPhotoRetry(false);setClientId(e.target.value);setMessage("");}}><option value="" disabled>Choose a company</option>{companies.filter(c=>c.active).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
     {company&&<div className="space-y-6" key={company.id}>
       <div className="grid gap-5 md:grid-cols-2">
-      <form className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{...Object.fromEntries(f),qty:Number(f.get("qty")),action:"arrival",clientId});el.reset();setReceived(localDate());await load(clientId);setMessage("Arrival logged. Pending inspection.");});}}>
+      <form className={card} onSubmit={e=>{e.preventDefault();const el=e.currentTarget,f=new FormData(el);void perform(async()=>{await request("",{...Object.fromEntries(f),qty:Number(f.get("qty")),action:"arrival",clientId});el.reset();setReceived(localDate());await load(clientId);setMessage(isCth?"Arrival logged. Record disposal once it’s done.":"Arrival logged. Pending inspection.");});}}>
         <h2 className="text-xl font-semibold">Log an arrival</h2>
-        {isCth ? <p className="text-sm text-zinc-400">Staff only. Inspect the return, then record disposal after it happens. No client approval is needed.</p> :
+        {isCth ? <p className="text-sm text-zinc-400">Staff only. Log the package, then record disposal after it happens. No inspection or client approval is needed.</p> :
           <label className="block">Merchant return ID<input name="merchantReturnId" className={input} required maxLength={100}/></label>}
         <label className="block">Product / SKU{isCth?" (optional)":""}<input name="sku" className={input} required={!isCth} maxLength={120}/></label>
         <label className="block">Date received<IntakeDateInput name="received" className={input} value={received} onChange={e=>setReceived(e.target.value)} required/></label>
@@ -116,14 +116,14 @@ export default function ClientWorkspaces(){
         <h2 className="text-xl font-semibold">Recent returns</h2>
         {!entries.length?<p className="text-zinc-400">{isCth?"No returns logged in the new intake yet. Earlier CTH returns are in Staff reports.":"No returns logged yet."}</p>:<ul className="divide-y divide-zinc-800">{entries.map(row=>{
           const instruction=instructionFor(row)?.instruction;
-          const status=row.status==="Disposed"?"Disposed":row.status==="Returned"?"Shipped to warehouse":!row.inspected_at?"Pending inspection":isCth?"Ready for disposal":instruction==="warehouse_hold"?"Hold for warehouse shipment":instruction==="disposal_authorized"?"Disposal authorized (not completed)":"Findings posted · Awaiting client decision";
           const inspectable=(isCth?["Received","Processing"]:["Received","Processing","Completed","On Hold"]).includes(row.status);
-          const canComplete=isCth?row.status==="Processing"&&Boolean(row.inspected_at):row.status==="On Hold"&&Boolean(instruction);
+          const canComplete=isCth?inspectable:row.status==="On Hold"&&Boolean(instruction);
+          const status=row.status==="Disposed"?"Disposed":row.status==="Returned"?"Shipped to warehouse":isCth?(canComplete?"Ready for disposal":row.status):!row.inspected_at?"Pending inspection":instruction==="warehouse_hold"?"Hold for warehouse shipment":instruction==="disposal_authorized"?"Disposal authorized (not completed)":"Findings posted · Awaiting client decision";
           return <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
             <div className="min-w-0"><strong className="break-all">{returnLabel(row,isCth)}</strong>{row.item_sku&&" · "+row.item_sku}<p className="text-sm text-zinc-400">{row.date_received}{row.storage_until? " · Storage included through "+row.storage_until:""} · {status}</p></div>
             <div className="flex flex-wrap gap-2">
-              {inspectable&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setCompletion(null);setSelected(row);}}>Inspect</button>}
               {canComplete&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setSelected(null);setCompletion(row);}}>{isCth?"Record disposal":"Record completed action"}</button>}
+              {inspectable&&<button disabled={busy} type="button" className="rounded-lg border border-zinc-700 px-3 py-2 text-sm" onClick={()=>{setPhotoRetry(false);setCompletion(null);setSelected(row);}}>{isCth?"Inspection (optional)":"Inspect"}</button>}
             </div>
           </li>;
         })}</ul>}
