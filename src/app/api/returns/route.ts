@@ -94,8 +94,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (input?.clientName?.trim() === "DGM Group") {
+    return NextResponse.json({ ok: false, error: "DGM Group is no longer accepting returns." }, { status: 410 });
+  }
+
   if (
-    !isClientName(input.clientName?.trim() ?? "") ||
+    !isClientName(input?.clientName?.trim() ?? "") ||
     !isIsoDate(input.dateReceived) ||
     !allowedCarriers.has(input.carrier) ||
     !allowedConditions.has(input.condition) ||

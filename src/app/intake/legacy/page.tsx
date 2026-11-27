@@ -5,7 +5,7 @@ import Link from "next/link";
 import StaffHeader from "@/components/staff-header";
 import { useMemo, useState } from "react";
 import {
-  CLIENT_NAMES,
+  ACTIVE_LEGACY_CLIENTS,
   CLIENT_WORKFLOWS,
   type ClientName,
   type PhotoCategory,
@@ -295,7 +295,7 @@ export default function IntakePage() {
                     onChange={(event) => changeClient(event.target.value as ClientName)}
                     className={inputClass}
                   >
-                    {CLIENT_NAMES.map((client) => (
+                    {ACTIVE_LEGACY_CLIENTS.map((client) => (
                       <option key={client}>{client}</option>
                     ))}
                   </select>

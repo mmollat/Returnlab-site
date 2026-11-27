@@ -2,6 +2,9 @@ export const CLIENT_NAMES = ["CTH", "DGM Group"] as const;
 
 export type ClientName = (typeof CLIENT_NAMES)[number];
 
+// DGM is retired from intake; retain its historical workflow definition.
+export const ACTIVE_LEGACY_CLIENTS = ["CTH"] as const satisfies readonly ClientName[];
+
 export type InspectionQuestion = {
   key: string;
   label: string;

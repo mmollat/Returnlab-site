@@ -62,6 +62,9 @@ try{
  assert.equal(initial.clientPlans.find(x=>x.name==="MB Heritage").baseFee,300);
  assert.equal(initial.clientPlans.find(x=>x.name==="MB Heritage").includedReturns,50);
  assert.equal(initial.clientPlans.find(x=>x.name==="CTH").baseFee,800);
+ assert.ok(!initial.clientPlans.some(x=>x.name==="DGM Group"));
+ const retired=await fetch(origin+"/api/returns",{method:"POST",headers:{authorization,"content-type":"application/json"},body:JSON.stringify({clientName:"DGM Group",dateReceived:"2026-11-27",carrier:"UPS",condition:"Unknown",status:"On Hold",actionTaken:"Hold for review"})});
+ assert.match((await json(retired,410)).error,/no longer accepting returns/);
  assert.equal((await fetch(origin+"/intake/clients")).status,401);
  const html=await fetch(origin+"/intake",{headers:{authorization}});
  assert.equal(html.status,200);assert.match(await html.text(),/returnlab-staff-logo\.png/);
@@ -69,7 +72,9 @@ try{
  for(const path of ["/reports","/intake/legacy"]){
    const page=await fetch(origin+path,{headers:{authorization}});
    assert.equal(page.status,200);
-   assert.match(await page.text(),/returnlab-staff-logo\.png/);
+   const markup=await page.text();
+   assert.match(markup,/returnlab-staff-logo\.png/);
+   assert.doesNotMatch(markup,/<option[^>]*>DGM Group<\/option>/);
  }
  await json(await rest({action:"createCompany",name:"No"}, ""),401);
  await json(await rest({action:"createCompany",name:"Cross origin"},authorization,"","https://other.example"),403);
