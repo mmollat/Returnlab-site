@@ -13,8 +13,8 @@ create table public.returnlab_clients (
 );
 create unique index returnlab_clients_name_uidx on public.returnlab_clients (lower(btrim(name)));
 create table public.returnlab_client_members (
-  client_id uuid not null references public.returnlab_clients(id) on delete restrict,
-  auth_user_id uuid not null references auth.users(id) on delete cascade,
+  client_id uuid not null references public.returnlab_clients(id),
+  auth_user_id uuid not null references auth.users(id),
   email text not null check (email = lower(btrim(email)) and length(email) between 3 and 254),
   active boolean not null default true,
   created_at timestamptz not null default now(),
@@ -29,30 +29,29 @@ revoke all on public.returnlab_clients, public.returnlab_client_members from pub
 grant select, insert, update on public.returnlab_clients, public.returnlab_client_members to service_role;
 
 alter table public.returnlab_returns
-  add column client_id uuid references public.returnlab_clients(id) on delete restrict,
+  add column client_id uuid references public.returnlab_clients(id),
   add column merchant_return_id text,
   add column client_summary text,
   add constraint returnlab_managed_return_fields_check check (
     client_id is null or (merchant_return_id is not null and length(btrim(merchant_return_id)) between 1 and 100)
   );
--- Keep legacy condition grades and new factual observations separate.
+-- New workflow uses separate observation and tracking fields. Legacy constraints are untouched.
 alter table public.returnlab_returns
-  drop constraint returnlab_returns_condition_check,
-  add constraint returnlab_returns_condition_check check (
-    (client_id is null and condition in ('New', 'New (unopened)', 'Like New', 'Used', 'Damaged', 'Defective', 'Unknown'))
+  add column observed_condition text,
+  add column managed_tracking_number text,
+  add constraint returnlab_managed_observation_check check (
+    (client_id is null and observed_condition is null)
     or (client_id is not null and (
-      (inspected_at is null and condition = 'Unknown')
-      or (inspected_at is not null and condition in ('Sealed / not opened', 'No visible issues', 'Wear or damage observed', 'Unable to verify'))
+      (inspected_at is null and observed_condition is null)
+      or (inspected_at is not null and observed_condition is not null and observed_condition in (
+        'Sealed / not opened', 'No visible issues', 'Wear or damage observed', 'Unable to verify'
+      ))
     ))
   );
 create index returnlab_returns_client_arrival_idx on public.returnlab_returns(client_id,date_received desc,id desc) where client_id is not null;
--- Preserve the legacy tracking constraint for existing workflows.
-drop index public.returnlab_returns_tracking_client_unique_idx;
-create unique index returnlab_returns_tracking_client_unique_idx on public.returnlab_returns
-  (client_name,lower(tracking_number)) where client_id is null and tracking_number is not null and btrim(tracking_number) <> '';
 -- An RMA can cover multiple SKUs or parcels. Prevent exact repeat entries while
 -- leaving legacy rows unchanged and allowing separate tracked parcels.
 create unique index returnlab_returns_managed_entry_uidx on public.returnlab_returns (
-  client_id, lower(btrim(merchant_return_id)), lower(coalesce(btrim(item_sku), '')), lower(coalesce(btrim(tracking_number), ''))
+  client_id, lower(btrim(merchant_return_id)), lower(coalesce(btrim(item_sku), '')), lower(coalesce(btrim(managed_tracking_number), ''))
 ) where client_id is not null;
 commit;

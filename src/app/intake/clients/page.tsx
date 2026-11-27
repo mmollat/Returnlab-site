@@ -7,7 +7,7 @@ import { PHOTO_CATEGORIES } from "@/lib/client-workflows";
 type Company={id:string; name:string; checklist:string[]; included_storage_days:number; portal_enabled:boolean; active:boolean};
 type ClientInstruction={instruction:"warehouse_hold"|"disposal_authorized";submitted_at:string};
 function instructionFor(entry:Entry){ const value=entry.returnlab_client_instructions; return Array.isArray(value)?value[0]:value; }
-type Entry={id:number; merchant_return_id:string; item_sku:string; date_received:string; storage_until:string|null; status:string; condition:string; inspection_outcome:string|null; client_summary:string|null; inspected_at:string|null; returnlab_client_instructions?:ClientInstruction|ClientInstruction[]|null};
+type Entry={id:number; merchant_return_id:string; item_sku:string; date_received:string; storage_until:string|null; status:string; observed_condition:string|null; inspection_outcome:string|null; client_summary:string|null; inspected_at:string|null; returnlab_client_instructions?:ClientInstruction|ClientInstruction[]|null};
 type Member={email:string;active:boolean};
 type Payload={error?:string;companies?:Company[];company?:Company;returns?:Entry[];members?:Member[]};
 const input="mt-1 block w-full rounded-lg border border-zinc-700 bg-zinc-900 p-2.5 text-sm";
@@ -120,7 +120,7 @@ export default function ClientWorkspaces(){
       });}}>
         <h2 className="text-xl font-semibold">Inspect {selected.merchant_return_id}</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <label>Condition<select name="condition" className={input} defaultValue={CONDITIONS.find(x=>x===selected.condition)??""} required><option value="" disabled>Choose an observation</option>{CONDITIONS.map(c=><option key={c}>{c}</option>)}</select></label>
+          <label>Condition<select name="condition" className={input} defaultValue={CONDITIONS.find(x=>x===selected.observed_condition)??""} required><option value="" disabled>Choose an observation</option>{CONDITIONS.map(c=><option key={c}>{c}</option>)}</select></label>
           <p className="self-end text-sm text-zinc-400">Publishing shares the findings and leaves the item on hold for the client’s decision.</p>
         </div>
         <fieldset className="space-y-2"><legend>Checklist</legend>{company.checklist.map((check,i)=><label key={check} className="flex flex-wrap items-center justify-between gap-2">{check}<select name={`check_${i}`} required defaultValue="" className="rounded border border-zinc-700 bg-zinc-900 p-1"><option value="" disabled>Choose</option><option value="yes">Verified / no issue</option><option value="no">Issue / unverified</option></select></label>)}</fieldset>

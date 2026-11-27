@@ -14,7 +14,7 @@ create table public.returnlab_client_instructions (
   instruction text not null check (instruction in ('warehouse_hold','disposal_authorized')),
   submitted_by uuid not null,
   submitted_at timestamptz not null default now(),
-  foreign key (return_id,client_id) references public.returnlab_returns(id,client_id) on delete restrict
+  foreign key (return_id,client_id) references public.returnlab_returns(id,client_id)
 );
 alter table public.returnlab_client_instructions enable row level security;
 revoke all on public.returnlab_client_instructions from public, anon, authenticated, service_role;

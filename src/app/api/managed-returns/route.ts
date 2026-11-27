@@ -4,7 +4,7 @@ import { CARRIERS, CONDITIONS, DEFAULT_CHECKLIST, field, isUuid, isoDate, portal
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 const companyFields = "id,name,checklist,monthly_fee,included_returns,overage_fee,included_storage_days,portal_enabled,active";
-const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,storage_until,status,condition,inspection_outcome,client_summary,inspected_at,returnlab_client_instructions(instruction,submitted_at)";
+const returnFields = "id,client_id,merchant_return_id,item_sku,date_received,storage_until,status,observed_condition,inspection_outcome,client_summary,inspected_at,returnlab_client_instructions(instruction,submitted_at)";
 function response(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       if (!merchantId || !sku || !isoDate(date) || !carrier || typeof qty !== "number" || !Number.isSafeInteger(qty) || qty<1 || qty>10000) return bad("Enter a return ID, SKU, valid received date, carrier and quantity.");
       const {data,error} = await db.from("returnlab_returns").insert({
         client_id:clientId, client_name:company.name, merchant_return_id:merchantId, item_sku:sku, date_received:date,
-        tracking_number:field(input.tracking,150)||null, storage_until:storageThrough(date,company.included_storage_days as number), carrier, qty, condition:"Unknown", status:"Received", action_taken:"Hold for review",
+        managed_tracking_number:field(input.tracking,150)||null, storage_until:storageThrough(date,company.included_storage_days as number), carrier, qty, condition:"Unknown", status:"Received", action_taken:"Hold for review",
       }).select(returnFields).single();
       if (error?.code === "23505") return response({error:"This return ID, SKU and tracking combination has already been logged."},409);
       if (error) throw error;
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
         Object.keys(findings).length!==checklist.length || !checklist.every((_,i)=>typeof findings[`check_${i}`]==="boolean")) return bad("Complete every checklist item and enter a customer-visible summary.");
       if ("outcome" in input) return bad("Record observations only. The client decides the disposition.");
       const {data,error} = await db.from("returnlab_returns").update({
-        condition, inspection_outcome:"Client review required", inspection_findings:findings, client_summary:summary, inspected_at:new Date().toISOString(),
+        observed_condition:condition, inspection_outcome:"Client review required", inspection_findings:findings, client_summary:summary, inspected_at:new Date().toISOString(),
         status:"On Hold", action_taken:"Hold for review",
       }).eq("client_id",clientId).eq("id",id).in("status",["Received","Processing","Completed","On Hold"]).select(returnFields).maybeSingle();
       if (error) throw error;

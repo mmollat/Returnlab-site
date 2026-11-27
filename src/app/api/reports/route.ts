@@ -127,7 +127,7 @@ function buildReports(returns: ReturnRecord[], managed: Map<string, ManagedPrici
         recentReturns: items.slice(0, 50).map((item) => ({
           id: item.id,
           dateReceived: item.date_received,
-          trackingNumber: item.tracking_number ?? undefined,
+          trackingNumber: item.managed_tracking_number ?? item.tracking_number ?? undefined,
           carrier: item.carrier,
           itemSku: item.item_sku ?? undefined,
           qty: item.qty,

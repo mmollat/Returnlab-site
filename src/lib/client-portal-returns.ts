@@ -1,7 +1,7 @@
 import "server-only";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
-const visibleFields = "id::text,merchant_return_id,date_received,status,item_sku,qty,condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)";
+const visibleFields = "id::text,merchant_return_id,date_received,status,item_sku,qty,observed_condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)";
 const directionFields = ",storage_until,outbound_status,returnlab_client_instructions(instruction,submitted_at)";
 
 export type ClientInstruction = {
@@ -20,7 +20,7 @@ export type PortalReturn = {
   status: string;
   item_sku: string | null;
   qty: number;
-  condition: string;
+  observed_condition: string | null;
   inspection_outcome: string | null;
   inspected_at: string | null;
   client_summary: string | null;

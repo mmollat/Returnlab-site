@@ -79,7 +79,7 @@ try{
  const inspected=(await json(await rest(inspection),200)).entry;
  assert.ok(inspected.inspected_at);
  assert.equal(inspected.status,"On Hold");
- assert.equal(inspected.condition,"No visible issues");
+ assert.equal(inspected.observed_condition,"No visible issues");
  assert.equal(inspected.inspection_outcome,"Client review required");
  assert.equal(entries[0].action_taken,"Hold for review");
  assert.equal(inspected.client_summary,"Complete set.");

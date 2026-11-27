@@ -22,7 +22,7 @@ const row = (returnId, inspected, photoId, qty = 1, extra = {}) => ({
   id: String(photoId),
   merchant_return_id: returnId, date_received: "2026-11-27", storage_until:"2026-12-27", status: inspected ? "On Hold" : "Received",
   outbound_status: null, returnlab_client_instructions: null,
-  item_sku: "SAMPLE", qty, condition: "Like New", inspection_outcome: inspected ? "Approved for resale" : null,
+  item_sku: "SAMPLE", qty, observed_condition: "No visible issues", inspection_outcome: inspected ? "Approved for resale" : null,
   inspected_at: inspected ? "2026-11-28T00:00:00.000Z" : null,
   client_summary: inspected ? "Original packaging intact." : null,
   returnlab_return_photos: [{ id: photoId, photo_category: "Packaging" }],
@@ -40,7 +40,7 @@ const data = {
 };
 const active = (entry) => !["Returned", "Disposed"].includes(entry.status) && entry.outbound_status !== "Tendered to carrier";
 const pendingDecision = (entry) => active(entry) && entry.inspected_at && entry.status === "On Hold" && !entry.returnlab_client_instructions;
-const baseFields = "id::text,merchant_return_id,date_received,status,item_sku,qty,condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)";
+const baseFields = "id::text,merchant_return_id,date_received,status,item_sku,qty,observed_condition,inspection_outcome,inspected_at,client_summary,returnlab_return_photos(id,photo_category)";
 const stub = createServer(async (request, response) => {
   const url = new URL(request.url, "http://127.0.0.1");
   const auth = request.headers.authorization?.replace(/^Bearer /, "");

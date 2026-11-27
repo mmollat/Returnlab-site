@@ -85,7 +85,7 @@ export default async function PortalPage({ searchParams }: {
               {company.client_instructions_enabled && row.storage_until && <><dt className="text-zinc-400">Storage included through</dt><dd>{row.storage_until}</dd></>}
               {row.item_sku && <><dt className="text-zinc-400">Item</dt><dd className="break-all">{row.item_sku}</dd></>}
               <dt className="text-zinc-400">Quantity</dt><dd>{row.qty}</dd>
-              {row.inspected_at && <><dt className="text-zinc-400">Condition</dt><dd>{row.condition}</dd></>}
+              {row.inspected_at && <><dt className="text-zinc-400">Condition</dt><dd>{row.observed_condition}</dd></>}
               <dt className="text-zinc-400">Inspection</dt>
               <dd>{row.inspected_at ? "Findings posted" : "Pending"}</dd>
             </dl>
