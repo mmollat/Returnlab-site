@@ -8,7 +8,10 @@ const includedReturns = Number(process.env.RETURNLAB_INCLUDED_RETURNS ?? 100);
 const overageFee = Number(process.env.RETURNLAB_OVERAGE_FEE ?? 0);
 const inspectionPhotoBucket = "return-inspections";
 
-function pricingFor(client: string) {
+type ManagedPricing = { name:string; monthly_fee:number; included_returns:number; overage_fee:number };
+function pricingFor(client: string, managed: Map<string, ManagedPricing>) {
+  const plan = managed.get(client);
+  if (plan) return { baseFee:Number(plan.monthly_fee), includedReturns:plan.included_returns, overageFee:Number(plan.overage_fee), outboundItemFee:0 };
   if (client === "DGM Group") {
     return {
       baseFee: 300,
@@ -41,7 +44,7 @@ function round(value: number, digits = 2) {
   return Math.round(value * factor) / factor;
 }
 
-function buildReports(returns: ReturnRecord[]): ReportRow[] {
+function buildReports(returns: ReturnRecord[], managed: Map<string, ManagedPricing>): ReportRow[] {
   const grouped = new Map<string, ReturnRecord[]>();
 
   for (const item of returns) {
@@ -61,8 +64,10 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
       const disposed = items.filter((item) =>
         item.action_taken.toLowerCase().includes("dispose")
       ).length;
-      const totalReturns = items.length;
-      const pricing = pricingFor(client);
+      const totalReturns = managed.has(client)
+        ? new Set(items.map(item => item.merchant_return_id?.trim().toLowerCase() ?? `legacy:${item.id}`)).size
+        : items.length;
+      const pricing = pricingFor(client, managed);
       const totalTimeMinutes = items.reduce(
         (total, item) => total + (item.time_spent_minutes ?? 0),
         0
@@ -99,13 +104,13 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
         client,
         month,
         generatedAt: new Date().toISOString(),
-        totalRows: totalReturns,
+        totalRows: items.length,
         totalReturns,
         kept,
         disposed,
-        keepRate: totalReturns ? round((kept / totalReturns) * 100, 1) : 0,
-        disposedRate: totalReturns
-          ? round((disposed / totalReturns) * 100, 1)
+        keepRate: items.length ? round((kept / items.length) * 100, 1) : 0,
+        disposedRate: items.length
+          ? round((disposed / items.length) * 100, 1)
           : 0,
         totalTimeMinutes,
         avgMinutesPerReturn: totalReturns
@@ -122,7 +127,7 @@ function buildReports(returns: ReturnRecord[]): ReportRow[] {
         recentReturns: items.slice(0, 50).map((item) => ({
           id: item.id,
           dateReceived: item.date_received,
-          trackingNumber: item.tracking_number ?? undefined,
+          trackingNumber: item.managed_tracking_number ?? item.tracking_number ?? undefined,
           carrier: item.carrier,
           itemSku: item.item_sku ?? undefined,
           qty: item.qty,
@@ -185,7 +190,17 @@ export async function GET(request: NextRequest) {
       }))
     );
 
-    return NextResponse.json(buildReports(returnsWithPhotoUrls), {
+    const managed = new Map<string, ManagedPricing>();
+    const { data: pricing, error: pricingError } = await supabase.from("returnlab_clients").select("name,monthly_fee,included_returns,overage_fee");
+    // Compatibility while the additive migration is not yet installed.
+    if (pricingError && !["42P01","PGRST205"].includes(pricingError.code)) throw pricingError;
+    for (const plan of (pricing ?? []) as ManagedPricing[]) if (plan.name !== "CTH" && plan.name !== "DGM Group") managed.set(plan.name, plan);
+    const reports = buildReports(returnsWithPhotoUrls, managed);
+    const clientNames = Array.from(new Set(["CTH","DGM Group",...managed.keys(),...reports.map(row=>row.client_name)]));
+    const clientPlans = clientNames.map(name=>({name,...pricingFor(name,managed)}));
+    // Older browser bundles still expect the original array.
+    const payload = request.nextUrl.searchParams.get("format")==="dashboard" ? {reports,clientPlans} : reports;
+    return NextResponse.json(payload, {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {

@@ -1,7 +1,10 @@
 export type ReturnRecord = {
   id: number;
   client_name: string;
+  client_id?: string | null;
+  merchant_return_id?: string | null;
   date_received: string;
+  managed_tracking_number?: string | null;
   tracking_number: string | null;
   carrier: string;
   item_sku: string | null;
