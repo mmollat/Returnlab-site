@@ -60,7 +60,7 @@ export default function ClientWorkspaces(){
     try {await fn();} catch(e){setMessage(e instanceof Error?e.message:"Something went wrong.");} finally{setBusy(false);}
   }
   return <main className="mx-auto min-h-screen max-w-5xl space-y-6 bg-black px-4 py-8 text-white sm:px-8">
-    <header><Link href="/intake/legacy" className="text-sm text-emerald-300">Open staff-only CTH / DGM intake</Link><h1 className="mt-3 text-3xl font-semibold">Client workspaces</h1><p className="mt-2 text-zinc-400">Add a company, log arrivals, and control who can see them in the client portal.</p></header>
+    <header><nav className="flex flex-wrap gap-4"><Link href="/intake/legacy" className="text-sm text-emerald-300">Open staff-only CTH / DGM intake</Link><Link href="/reports" className="text-sm text-emerald-300">Staff reports</Link></nav><h1 className="mt-3 text-3xl font-semibold">Client workspaces</h1><p className="mt-2 text-zinc-400">Add a company, log arrivals, and control who can see them in the client portal.</p></header>
     {message&&<p role="status" className="rounded-xl border border-zinc-700 bg-zinc-900 p-3">{message}</p>}
     <details className={card} open={loaded&&!companies.length?true:undefined}>
       <summary className="cursor-pointer text-lg font-semibold">Add a company</summary>

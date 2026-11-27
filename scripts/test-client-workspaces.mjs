@@ -4,7 +4,7 @@ import {createServer} from "node:http";
 import {once} from "node:events";
 import {randomUUID} from "node:crypto";
 const instructions=[];
-const companies=[{id:randomUUID(),name:"CTH",active:true,portal_enabled:false,included_storage_days:0,checklist:[]}], members=[], entries=[], users=new Map();
+const companies=[{id:randomUUID(),name:"CTH",active:true,portal_enabled:false,included_storage_days:0,checklist:[]},{id:randomUUID(),name:"MB Heritage",active:true,portal_enabled:true,included_storage_days:30,checklist:[],monthly_fee:300,included_returns:50,overage_fee:6}], members=[], entries=[], users=new Map();
 let postToOtp=0;
 const server=createServer(async(req,res)=>{
  const url=new URL(req.url,"http://localhost");
@@ -38,7 +38,7 @@ const server=createServer(async(req,res)=>{
   if(pathname.endsWith("/returnlab_returns")){
     if(req.method==="POST"){const row={id:entries.length+1,...input};entries.push(row);return reply([row],201);}
     const status=qs("status");
-    const matched=entries.filter(r=>r.client_id===qs("client_id")&&(!qs("id")||r.id===Number(qs("id")))&&(!status||(status.startsWith("in.(")?status.slice(4,-1).split(",").includes(r.status):r.status===status)));
+    const matched=entries.filter(r=>(!qs("client_id")||r.client_id===qs("client_id"))&&(!qs("id")||r.id===Number(qs("id")))&&(!status||(status.startsWith("in.(")?status.slice(4,-1).split(",").includes(r.status):r.status===status)));
     if(req.method==="PATCH")matched.forEach(x=>Object.assign(x,input));
     return reply(matched);
   }
@@ -57,6 +57,11 @@ try{
  let ready=false;
  for(let attempt=0;attempt<45;attempt++){try{const r=await rest(null,"");if(r.status===401){ready=true;break;}}catch{};await new Promise(r=>setTimeout(r,750));}
  assert.ok(ready);
+ const initial=await json(await fetch(origin+"/api/reports?format=dashboard",{headers:{authorization}}),200);
+ assert.equal(initial.reports.length,0);
+ assert.equal(initial.clientPlans.find(x=>x.name==="MB Heritage").baseFee,300);
+ assert.equal(initial.clientPlans.find(x=>x.name==="MB Heritage").includedReturns,50);
+ assert.equal(initial.clientPlans.find(x=>x.name==="CTH").baseFee,800);
  assert.equal((await fetch(origin+"/intake/clients")).status,401);
  const html=await fetch(origin+"/intake",{headers:{authorization}});
  assert.equal(html.status,200);assert.match(await html.text(),/Client workspaces/);

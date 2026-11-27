@@ -1,16 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ReportData, ReportRow } from "@/lib/returnlab-types";
 
-const DEFAULT_BASE_FEE = 800;
-const DEFAULT_INCLUDED_RETURNS = 100;
-
-function emptyReportData(client: string, month: string): ReportData {
-  const isDgm = client === "DGM Group";
-  const clientBaseFee = isDgm ? 300 : DEFAULT_BASE_FEE;
-  const clientIncludedReturns = isDgm ? 50 : DEFAULT_INCLUDED_RETURNS;
+type ClientPlan = { name: string; baseFee: number; includedReturns: number };
+function emptyReportData(client: string, month: string, plan?: ClientPlan): ReportData {
+  const clientBaseFee = plan?.baseFee ?? 0;
+  const clientIncludedReturns = plan?.includedReturns ?? 0;
 
   return {
     business: "ReturnLab Logistics",
@@ -39,6 +37,7 @@ function emptyReportData(client: string, month: string): ReportData {
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<ReportRow[]>([]);
+  const [clientPlans, setClientPlans] = useState<ClientPlan[]>([]);
   const [selectedClient, setSelectedClient] = useState("CTH");
   const [selectedMonth, setSelectedMonth] = useState("2026-04");
   const [loading, setLoading] = useState(true);
@@ -50,14 +49,15 @@ export default function ReportsPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch("/api/reports", { cache: "no-store" });
+        const res = await fetch("/api/reports?format=dashboard", { cache: "no-store" });
 
         if (!res.ok) {
           throw new Error(`Failed to load reports: ${res.status}`);
         }
 
-        const data = (await res.json()) as ReportRow[];
+        const {reports:data,clientPlans:plans}= (await res.json()) as {reports:ReportRow[];clientPlans:ClientPlan[]};
         setReports(data);
+        setClientPlans(plans);
 
         if (data.length > 0) {
           setSelectedClient(data[0].client_name);
@@ -74,9 +74,8 @@ export default function ReportsPage() {
   }, []);
 
   const clients = useMemo(() => {
-    const reportClients = reports.map((r) => r.client_name);
-    return Array.from(new Set(reportClients.length ? reportClients : ["CTH"]));
-  }, [reports]);
+    return clientPlans.map(plan=>plan.name);
+  }, [clientPlans]);
 
   const months = useMemo(() => {
     const year = new Date().getFullYear();
@@ -104,7 +103,8 @@ export default function ReportsPage() {
     );
   }, [reports, selectedClient, selectedMonth]);
 
-  const d = report?.report_data ?? emptyReportData(selectedClient, selectedMonth);
+  const plan=clientPlans.find(item=>item.name===selectedClient);
+  const d = report?.report_data ?? emptyReportData(selectedClient, selectedMonth, plan);
   const recentReturns = d.recentReturns ?? [];
   const reportClient = report?.client_name ?? selectedClient;
   const reportMonth = report?.report_month ?? selectedMonth;
@@ -137,6 +137,7 @@ export default function ReportsPage() {
             <p className="mb-2 text-sm uppercase tracking-[0.35em] text-zinc-500">
               ReturnLab Logistics
             </p>
+            <Link href="/intake" className="mb-3 inline-block text-sm text-emerald-300">Open staff intake</Link>
             <h1 className="text-4xl font-semibold tracking-tight">
               Monthly Return Report
             </h1>
@@ -177,7 +178,7 @@ export default function ReportsPage() {
 
         {!report && (
           <div className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 text-sm text-zinc-400">
-            No return data found for {reportClient} · {reportMonth}. Showing base monthly invoice only.
+            No return data found for {reportClient} · {reportMonth}. Showing the plan’s base monthly fee only.
           </div>
         )}
 
@@ -185,7 +186,7 @@ export default function ReportsPage() {
           <MetricCard label="Total Returns" value={d.totalReturns ?? 0} />
           <MetricCard label="Kept" value={d.kept ?? 0} accent="green" />
           <MetricCard label="Disposed" value={d.disposed ?? 0} accent="red" />
-          <MetricCard label="Invoice Total" value={`$${d.totalDue ?? 0}`} />
+          <MetricCard label={report ? "Invoice Total" : "Monthly Base Fee"} value={plan || report ? `$${d.totalDue ?? 0}` : "—"} />
         </section>
 
         <section className="mb-8 grid gap-4 md:grid-cols-4">
